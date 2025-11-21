@@ -1,10 +1,10 @@
 from typing import Any
 
 
-class CodietError(Exception):
+class CodietException(Exception):
     """Base exception for all codiet exceptions.""" 
 
-class InvalidDTOError(CodietError):
+class InvalidDTOError(CodietException):
     """Raised when a DTO is invalid."""
 
     def __init__(self, dto: Any) -> None:
