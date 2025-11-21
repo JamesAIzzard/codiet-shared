@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any, TypeGuard, TypedDict, Collection
 import numbers
 
-from codiet_data.dto_predicates import has_only_keys
+from .dto_predicates import has_only_keys
 
 
 class UnitDTO(TypedDict):

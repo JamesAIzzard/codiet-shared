@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing import TypedDict, TypeGuard, Any, Collection, Optional
 import numbers
 
-from codiet_data.dto_predicates import has_only_keys
-from codiet_data.dtos.quantity_dtos import QuantityDTO, is_quantity_dto
+from .dto_predicates import has_only_keys
+from .quantity_dtos import QuantityDTO, is_quantity_dto
 
 
 class NutrientDTO(TypedDict):

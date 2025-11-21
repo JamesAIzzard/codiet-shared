@@ -3,16 +3,16 @@ from typing import Any, NotRequired, TypeGuard, TypedDict
 from datetime import date
 import numbers
 
-from codiet_data.dto_predicates import has_only_keys
-from codiet_data.dtos.quantity_dtos import is_unit_conversion_dto, UnitConversionDTO
-from codiet_data.dtos.cost_dtos import is_cost_ratio_dto, CostRatioDTO
-from codiet_data.dtos.nutrient_dtos import (
+from .dto_predicates import has_only_keys
+from .quantity_dtos import is_unit_conversion_dto, UnitConversionDTO
+from .cost_dtos import is_cost_ratio_dto, CostRatioDTO
+from .nutrient_dtos import (
     is_nutrient_ratio_dto,
     is_nutrient_flag_dto,
     NutrientRatioDTO,
     NutrientFlagDTO,
 )
-from codiet_data.dtos.calories_dtos import is_calories_ratio_dto, CaloriesRatioDTO
+from .calories_dtos import is_calories_ratio_dto, CaloriesRatioDTO
 
 
 class IngredientDTO(TypedDict):
