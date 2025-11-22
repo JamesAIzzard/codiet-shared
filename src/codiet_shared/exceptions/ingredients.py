@@ -19,6 +19,28 @@ class IngredientDTOError(IngredientError):
         return f"Invalid ingredient JSON: {self.json}"
 
 
+class UnnamedIngredientError(IngredientError):
+    """Indicates that an ingredient is missing a name."""
+
+    def __init__(self) -> None:
+        pass
+
+    @property
+    def message(self) -> str:
+        return "Ingredient is missing a name."
+
+
+class NoIngredientDescriptionError(IngredientError):
+    """Indicates that an ingredient is missing a description."""
+
+    def __init__(self) -> None:
+        pass
+
+    @property
+    def message(self) -> str:
+        return "Ingredient is missing a description."
+
+
 class IngredientNotFoundError(IngredientError):
     """Indicates that an ingredient with this namewas not found in the repository."""
 
@@ -93,6 +115,8 @@ class NoIngredientQuantitiesError(IngredientError):
 __all__ = [
     "IngredientError",
     "IngredientDTOError",
+    "UnnamedIngredientError",
+    "NoIngredientDescriptionError",
     "IngredientNotFoundError",
     "DuplicateIngredientError",
     "DuplicateIngredientQuantityError",
