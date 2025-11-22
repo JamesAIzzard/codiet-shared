@@ -11,6 +11,18 @@ class CaloriesError(CodietException):
     """Base class for all calorie-related exceptions."""
 
 
+class NegativeCaloriesError(CaloriesError):
+    def __init__(self, *, calories: float, entity_name: str):
+        self.calories = calories
+        self.entity_name = entity_name
+
+    @property
+    def message(self) -> str:
+        return (
+            f"Calories cannot be negative: {self.calories} kcal in {self.entity_name}."
+        )
+
+
 class IncompleteCaloricNutrientsError(CaloriesError):
     def __init__(self, *, nutrient_ratios: NutrientRatioMap):
         self.nutrient_ratios = nutrient_ratios
@@ -25,5 +37,6 @@ class IncompleteCaloricNutrientsError(CaloriesError):
 
 __all__ = [
     "CaloriesError",
+    "NegativeCaloriesError",
     "IncompleteCaloricNutrientsError",
 ]

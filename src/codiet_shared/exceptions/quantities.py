@@ -49,6 +49,17 @@ class UnitConversionError(CodietException):
     """Base class for unit conversion errors."""
 
 
+class UnitConversionNotFoundError(UnitConversionError):
+    """Raised when a unit conversion is not found."""
+
+    def __init__(self, key: UnitConversionKey) -> None:
+        self.key: UnitConversionKey = key
+
+    @property
+    def message(self) -> str:
+        return f"The unit conversion {self.key} was not found."
+
+
 class DuplicateUnitConversionError(UnitConversionError):
     """Raised when a duplicate unit conversion is added."""
 
@@ -89,6 +100,7 @@ __all__ = [
     "NegativeQuantityError",
     "ZeroQuantityError",
     "UnitConversionError",
+    "UnitConversionNotFoundError",
     "DuplicateUnitConversionError",
     "UndefinedUnitConversionError",
     "UnitConversionOverconstrainedError",
