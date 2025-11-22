@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Protocol, runtime_checkable
 
 from ..protocols.quantities import IsQuantified
-from ..dtos.calories_dtos import CaloriesRatioDTO
+from ..dtos.calories import CaloriesRatioDTO
 
 
 @runtime_checkable
@@ -35,3 +35,10 @@ class HasCaloriesRatio(Protocol):
 class HasCalories(HasCaloriesRatio, IsQuantified, Protocol):
     @property
     def calories(self) -> float: ...
+
+
+__all__ = [
+    "CaloriesRatio",
+    "HasCaloriesRatio",
+    "HasCalories",
+]

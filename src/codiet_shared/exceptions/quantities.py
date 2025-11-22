@@ -10,15 +10,10 @@ if TYPE_CHECKING:
 class UnitError(CodietException):
     """Base Unit error."""
 
-    def __init__(self, message: str) -> None:
-        self._message = message
-
-    @property
-    def message(self) -> str:
-        return self._message
-
 
 class UnknownUnitError(UnitError):
+    """A unit is unknown to the system."""
+
     def __init__(self, key: str) -> None:
         self.key: str = key
 
@@ -28,12 +23,12 @@ class UnknownUnitError(UnitError):
 
 
 class QuantityError(CodietException):
-    @property
-    def message(self) -> str:
-        return "General base class for quantity errors."
+    """General base class for quantity errors."""
 
 
 class NegativeQuantityError(QuantityError):
+    """Raised when a quantity is negative."""
+
     def __init__(self, quantity: float):
         self.quantity = quantity
 
@@ -43,6 +38,8 @@ class NegativeQuantityError(QuantityError):
 
 
 class ZeroQuantityError(QuantityError):
+    """Raised when a quantity is zero."""
+
     @property
     def message(self) -> str:
         return "The quantity is zero."
@@ -51,15 +48,10 @@ class ZeroQuantityError(QuantityError):
 class UnitConversionError(CodietException):
     """Base class for unit conversion errors."""
 
-    def __init__(self, message: str) -> None:
-        self._message = message
-
-    @property
-    def message(self) -> str:
-        return self._message
-
 
 class DuplicateUnitConversionError(UnitConversionError):
+    """Raised when a duplicate unit conversion is added."""
+
     def __init__(self, key: UnitConversionKey):
         self.key = key
 
@@ -69,6 +61,8 @@ class DuplicateUnitConversionError(UnitConversionError):
 
 
 class UndefinedUnitConversionError(UnitConversionError):
+    """Raised when the unit conversion is not defined on the entity."""
+
     def __init__(self, key: UnitConversionKey) -> None:
         self.key: UnitConversionKey = key
 
@@ -78,6 +72,8 @@ class UndefinedUnitConversionError(UnitConversionError):
 
 
 class UnitConversionOverconstrainedError(UnitConversionError):
+    """Raised when the unit conversion would overconstrain the entity."""
+
     def __init__(self, key: UnitConversionKey):
         self.key = key
 

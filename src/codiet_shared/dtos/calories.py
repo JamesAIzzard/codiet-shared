@@ -3,8 +3,8 @@ from typing import Any, TypeGuard, TypedDict
 import numbers
 
 
-from .dto_predicates import has_only_keys
-from .quantity_dtos import QuantityDTO, is_quantity_dto
+from .utils import has_only_keys
+from .quantities import QuantityDTO, is_quantity_dto
 
 
 class CaloriesRatioDTO(TypedDict):

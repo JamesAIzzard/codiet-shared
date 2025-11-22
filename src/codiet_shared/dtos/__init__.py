@@ -1,18 +1,18 @@
-from .ingredient_dtos import (
+from .ingredients import (
     IngredientDTO,
     is_ingredient_dto,
     IngredientQuantityDTO,
     is_ingredient_quantity_dto,
 )
-from .quantity_dtos import (
+from .quantities import (
     UnitConversionDTO,
     QuantityDTO,
     is_unit_conversion_dto,
     is_quantity_dto,
 )
-from .cost_dtos import CostRatioDTO, is_cost_ratio_dto
-from .calories_dtos import CaloriesRatioDTO, is_calories_ratio_dto
-from .nutrient_dtos import (
+from .cost import CostRatioDTO, is_cost_ratio_dto
+from .calories import CaloriesRatioDTO, is_calories_ratio_dto
+from .nutrients import (
     NutrientFlagDTO,
     NutrientRatioDTO,
     is_nutrient_flag_dto,
@@ -20,7 +20,7 @@ from .nutrient_dtos import (
     NutrientMassDTO,
     is_nutrient_mass_dto,
 )
-from .recipe_dtos import RecipeDTO, is_recipe_dto
+from .recipes import RecipeDTO, is_recipe_dto
 
 __all__ = [
     "IngredientDTO",

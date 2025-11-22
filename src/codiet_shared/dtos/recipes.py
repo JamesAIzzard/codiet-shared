@@ -3,16 +3,16 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any, NotRequired, TypeGuard, TypedDict
 
-from .dto_predicates import has_only_keys
-from .quantity_dtos import (
+from .utils import has_only_keys
+from .quantities import (
     is_unit_conversion_dto,
     UnitConversionDTO,
     QuantityDTO,
     is_quantity_dto
 )
-from .cost_dtos import is_cost_ratio_dto, CostRatioDTO
-from .calories_dtos import is_calories_ratio_dto, CaloriesRatioDTO
-from .nutrient_dtos import (
+from .cost import is_cost_ratio_dto, CostRatioDTO
+from .calories import is_calories_ratio_dto, CaloriesRatioDTO
+from .nutrients import (
     NutrientFlagDTO,
     NutrientRatioDTO,
     NutrientMassDTO,
@@ -20,7 +20,7 @@ from .nutrient_dtos import (
     is_nutrient_ratio_dto,
     is_nutrient_mass_dto,
 )
-from .ingredient_dtos import (
+from .ingredients import (
     is_ingredient_quantity_dto,
     IngredientQuantityDTO,
 )

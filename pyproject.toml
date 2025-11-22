@@ -3,17 +3,27 @@ name = "codiet-shared"
 version = "0.1.0"
 description = "Shared protocols and exceptions for codiet projects"
 authors = [
-    {name = "James Izzard",email = "jamesaizzard@gmail.com"}
+    { name = "James Izzard", email = "jamesaizzard@gmail.com" }
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13,<4.0.0"
+
 dependencies = [
+    "pygraph"
 ]
 
 [tool.poetry]
-packages = [ { include = "codiet_shared", from = "src" } ]
+packages = [
+    { include = "codiet_shared", from = "src" }
+]
+requires-poetry = ">=2.0"
 
+[tool.poetry.dependencies]
+pygraph = { git = "git@github.com:JamesAIzzard/pygraph.git", rev = "main" }
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F403", "F401"]

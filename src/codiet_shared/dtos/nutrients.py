@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing import TypedDict, TypeGuard, Any, Collection, Optional
 import numbers
 
-from .dto_predicates import has_only_keys
-from .quantity_dtos import QuantityDTO, is_quantity_dto
+from .utils import has_only_keys
+from .quantities import QuantityDTO, is_quantity_dto
 
 
 class NutrientDTO(TypedDict):

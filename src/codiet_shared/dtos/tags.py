@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TypedDict, Any, TypeGuard
 
-from .dto_predicates import has_only_keys
+from .utils import has_only_keys
 
 
 class TagDTO(TypedDict):
