@@ -3,8 +3,15 @@ from typing import Protocol, runtime_checkable, Optional, Collection, Mapping
 
 from pygraph import TreeNode, GraphNode
 
-from ..dtos.nutrients import NutrientFlagDTO, NutrientRatioDTO
+from ..exceptions.nutrients import (
+    UndefinedNutrientFlagError,
+    UndefinedNutrientRatioError,
+    UndefinedNutrientMassError,
+)
+from ..protocols.quantities import IsQuantified
+from ..dtos.nutrients import NutrientFlagDTO, NutrientRatioDTO, NutrientMassDTO
 from ..utils import sig_fig_fmt
+
 
 @runtime_checkable
 class Nutrient(TreeNode, Protocol):
@@ -143,6 +150,7 @@ class NutrientRatio(Protocol):
 
 NutrientRatioMap = Mapping[str, NutrientRatio]
 
+
 @runtime_checkable
 class NutrientAttrs(Protocol):
     @property
@@ -161,7 +169,8 @@ class NutrientAttrs(Protocol):
             self.nutrient_ratios == other.nutrient_ratios
             and self.nutrient_flags == other.nutrient_flags
         )
-    
+
+
 class HasNutrientAttrs(Protocol):
     @property
     def nutrient_flags(self) -> NutrientFlagMap: ...
@@ -190,3 +199,35 @@ class HasNutrientAttrs(Protocol):
     def get_nutrient_ratio(self, nutrient_name: str) -> NutrientRatio:
         self.assert_nutrient_ratio_defined(nutrient_name)
         return self.nutrient_ratios[nutrient_name]
+
+
+@runtime_checkable
+class NutrientMass(IsQuantified, Protocol):
+    @property
+    def nutrient(self) -> Nutrient: ...
+    @property
+    def nutrient_name(self) -> str:
+        return self.nutrient.name
+
+    def to_dto(self) -> NutrientMassDTO: ...
+
+
+NutrientMassMap = Mapping[str, NutrientMass]
+
+
+class HasNutrientMasses(HasNutrientAttrs, IsQuantified, Protocol):
+    @property
+    def nutrient_masses(self) -> NutrientMassMap: ...
+
+    def nutrient_mass_is_defined(self, nutrient_name: str) -> bool:
+        return nutrient_name in self.nutrient_masses
+
+    def assert_nutrient_mass_defined(self, nutrient_name: str) -> None:
+        if not self.nutrient_mass_is_defined(nutrient_name):
+            raise UndefinedNutrientMassError(
+                nutrient_name=nutrient_name, has_nutrient_masses=self
+            )
+
+    def get_nutrient_mass(self, nutrient_name: str) -> NutrientMass:
+        self.assert_nutrient_mass_defined(nutrient_name)
+        return self.nutrient_masses[nutrient_name]

@@ -1,4 +1,17 @@
-from .common import CodietException
+from __future__ import annotations
+from typing import TYPE_CHECKING, Collection
+
+from ..exceptions.common import CodietException
+from ..utils import sig_fig_fmt
+
+if TYPE_CHECKING:
+    from ..protocols.nutrients import (
+        HasNutrientAttrs,
+        NutrientFlag,
+        NutrientRatio,
+        NutrientRatioMap,
+        HasNutrientMasses,
+    )
 
 
 class NutrientError(CodietException):
@@ -7,6 +20,7 @@ class NutrientError(CodietException):
 
 class UnknownNutrientError(NutrientError):
     """A nutrient is unknown to the system."""
+
     def __init__(self, key: str) -> None:
         self.key: str = key
 
@@ -16,6 +30,8 @@ class UnknownNutrientError(NutrientError):
 
 
 class NutrientAliasCollisionError(NutrientError):
+    """An alias collides with another nutrient name or alias."""
+
     def __init__(self, alias: str):
         self.alias = alias
 
@@ -25,6 +41,8 @@ class NutrientAliasCollisionError(NutrientError):
 
 
 class ExistingNutrientError(NutrientError):
+    """The nutrient already exists."""
+
     def __init__(self, nutrient_name: str):
         self.nutrient_name = nutrient_name
 
@@ -33,16 +51,21 @@ class ExistingNutrientError(NutrientError):
         return f"The nutrient {self.nutrient_name} already exists."
 
 
-class NutrientAttrError(CodietException): ...
+class NutrientAttrError(CodietException):
+    """Base class for nutrient attribute errors."""
 
 
-class NutrientFlagError(NutrientAttrError): ...
+class NutrientFlagError(NutrientAttrError):
+    """Base class for nutrient flag errors."""
 
 
-class NutrientRatioError(NutrientAttrError): ...
+class NutrientRatioError(NutrientAttrError):
+    """Base class for nutrient ratio errors."""
 
 
 class UndefinedNutrientRatioError(NutrientRatioError):
+    """Raised when the nutrient ratio is not defined on the entity."""
+
     def __init__(self, *, nutrient_name: str, entity: HasNutrientAttrs) -> None:
         self.nutrient_name = nutrient_name
         self.entity = entity
@@ -53,6 +76,8 @@ class UndefinedNutrientRatioError(NutrientRatioError):
 
 
 class DuplicateNutrientRatioError(NutrientRatioError):
+    """Raised when the nutrient ratio is already defined on the entity."""
+
     def __init__(self, *, nutrient_name: str, entity: HasNutrientAttrs) -> None:
         self.nutrient_name = nutrient_name
         self.entity = entity
@@ -63,6 +88,8 @@ class DuplicateNutrientRatioError(NutrientRatioError):
 
 
 class UnknownNutrientFlagError(NutrientFlagError):
+    """Raised when the nutrient flag is not known to the system."""
+
     def __init__(self, key: str) -> None:
         self.key = key
 
@@ -72,6 +99,8 @@ class UnknownNutrientFlagError(NutrientFlagError):
 
 
 class UndefinedNutrientFlagError(NutrientFlagError):
+    """Raised when the nutrient flag is not defined on the entity."""
+
     def __init__(self, *, flag_name: str, entity: HasNutrientAttrs) -> None:
         self.flag_name = flag_name
         self.has_nutrient_attrs = entity
@@ -82,6 +111,8 @@ class UndefinedNutrientFlagError(NutrientFlagError):
 
 
 class ExcludedNutrientError(NutrientAttrError):
+    """Raised when a non-zero nutrient is excluded by a flag."""
+
     def __init__(
         self, *, non_zero_nutrient: NutrientRatio, excluding_flag: NutrientFlag
     ):
@@ -99,6 +130,8 @@ class ExcludedNutrientError(NutrientAttrError):
 
 
 class FalseFlagWithTrueChildError(NutrientAttrError):
+    """Raised when a false flag has a true child flag."""
+
     def __init__(self, *, false_flag: NutrientFlag, true_child: NutrientFlag) -> None:
         self.false_flag = false_flag
         self.true_child = true_child
@@ -115,6 +148,8 @@ class FalseFlagWithTrueChildError(NutrientAttrError):
 
 
 class NonZeroNutrientWithZeroAncError(NutrientAttrError):
+    """Raised when a non-zero nutrient has a zero ancestor."""
+
     def __init__(
         self,
         *,
@@ -136,6 +171,8 @@ class NonZeroNutrientWithZeroAncError(NutrientAttrError):
 
 
 class NonZeroParentNutrientWithFullZeroChildrenError(NutrientAttrError):
+    """Raised when a non-zero parent nutrient has all children defined as zero."""
+
     def __init__(
         self,
         *,
@@ -157,6 +194,8 @@ class NonZeroParentNutrientWithFullZeroChildrenError(NutrientAttrError):
 
 
 class ChildNutrientsExceedParentError(NutrientAttrError):
+    """Raised when the sum of child nutrients exceeds the parent nutrient."""
+
     def __init__(
         self,
         *,
@@ -189,6 +228,8 @@ class ChildNutrientsExceedParentError(NutrientAttrError):
 
 
 class ParentNutrientExceedsChildSumError(NutrientAttrError):
+    """Raised when the parent nutrient exceeds the sum of its child nutrients."""
+
     def __init__(
         self,
         *,
@@ -222,6 +263,8 @@ class ParentNutrientExceedsChildSumError(NutrientAttrError):
 
 
 class NutrientRatiosExceedOneError(NutrientAttrError):
+    """Raised when the total of nutrient ratios exceeds 1.0."""
+
     def __init__(
         self, *, total: float, nutrient_ratios: Collection[NutrientRatio]
     ) -> None:
@@ -246,10 +289,13 @@ class NutrientRatiosExceedOneError(NutrientAttrError):
         return self.total
 
 
-class NutrientMassError(CodietException): ...
+class NutrientMassError(CodietException):
+    """Base class for nutrient mass errors."""
 
 
 class UndefinedNutrientMassError(NutrientMassError):
+    """Raised when the nutrient mass is not defined on the entity."""
+
     def __init__(
         self, *, nutrient_name: str, has_nutrient_masses: HasNutrientMasses
     ) -> None:
@@ -259,3 +305,27 @@ class UndefinedNutrientMassError(NutrientMassError):
     @property
     def message(self) -> str:
         return f"No mass is defined for {self.nutrient_name} on the entity."
+
+
+__all__ = [
+    "NutrientError",
+    "UnknownNutrientError",
+    "NutrientAliasCollisionError",
+    "ExistingNutrientError",
+    "NutrientAttrError",
+    "NutrientFlagError",
+    "NutrientRatioError",
+    "UndefinedNutrientRatioError",
+    "DuplicateNutrientRatioError",
+    "UnknownNutrientFlagError",
+    "UndefinedNutrientFlagError",
+    "ExcludedNutrientError",
+    "FalseFlagWithTrueChildError",
+    "NonZeroNutrientWithZeroAncError",
+    "NonZeroParentNutrientWithFullZeroChildrenError",
+    "ChildNutrientsExceedParentError",
+    "ParentNutrientExceedsChildSumError",
+    "NutrientRatiosExceedOneError",
+    "NutrientMassError",
+    "UndefinedNutrientMassError",
+]
