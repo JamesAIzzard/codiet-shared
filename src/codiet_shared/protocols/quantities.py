@@ -95,6 +95,9 @@ class IsQuantified(Protocol):
 @runtime_checkable
 class UnitConversion(Protocol):
     @property
+    def uid(self) -> Optional[int]: ...
+
+    @property
     def name(self) -> UnitConversionKey: ...
 
     @property

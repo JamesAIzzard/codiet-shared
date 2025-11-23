@@ -51,6 +51,7 @@ def is_unit_dto(obj: Any) -> TypeGuard[UnitDTO]:
 
 
 class UnitConversionDTO(TypedDict):
+    uid: int | None
     from_unit_name: str
     from_unit_value: float
     to_unit_name: str
@@ -73,8 +74,12 @@ def is_unit_conversion_dto(obj: Any) -> TypeGuard[UnitConversionDTO]:
 
     if not has_only_keys(
         obj,
-        ("from_unit_name", "from_unit_value", "to_unit_name", "to_unit_value"),
+        ("uid", "from_unit_name", "from_unit_value", "to_unit_name", "to_unit_value"),
     ):
+        return False
+
+    uid_val = obj.get("uid")
+    if not (isinstance(uid_val, int) or uid_val is None):
         return False
 
     return (
