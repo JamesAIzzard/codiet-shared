@@ -20,7 +20,7 @@ class IngredientDTO(TypedDict):
     name: str
     description: str
     last_review_date: str
-    standard_unit_name: str
+    standard_unit_uid: int
     unit_conversions: list[UnitConversionDTO]
     cost_ratio: CostRatioDTO
     gi: float | None
@@ -39,7 +39,7 @@ def is_ingredient_dto(obj: Any) -> TypeGuard[IngredientDTO]:
         "name",
         "description",
         "last_review_date",
-        "standard_unit_name",
+        "standard_unit_uid",
         "unit_conversions",
         "cost_ratio",
         "gi",
@@ -62,7 +62,7 @@ def is_ingredient_dto(obj: Any) -> TypeGuard[IngredientDTO]:
         date.fromisoformat(last_review_date)
     except (TypeError, ValueError):
         return False
-    if not isinstance(obj.get("standard_unit_name"), str):
+    if not isinstance(obj.get("standard_unit_uid"), int):
         return False
 
     uc_list = obj.get("unit_conversions")
@@ -109,8 +109,8 @@ def is_ingredient_dto(obj: Any) -> TypeGuard[IngredientDTO]:
 
 
 class IngredientQuantityDTO(TypedDict):
-    ingredient_name: str
-    quantity_unit_name: str
+    ingredient_uid: int
+    quantity_unit_uid: int
     quantity_value: float
 
 
@@ -119,9 +119,9 @@ def is_ingredient_quantity_dto(obj: Any) -> TypeGuard[IngredientQuantityDTO]:
         isinstance(obj, dict)
         and has_only_keys(
             obj,
-            ("ingredient_name", "quantity_unit_name", "quantity_value"),
+            ("ingredient_uid", "quantity_unit_uid", "quantity_value"),
         )
-        and isinstance(obj.get("ingredient_name"), str)
-        and isinstance(obj.get("quantity_unit_name"), str)
+        and isinstance(obj.get("ingredient_uid"), int)
+        and isinstance(obj.get("quantity_unit_uid"), int)
         and isinstance(obj.get("quantity_value"), (int, float))
     )

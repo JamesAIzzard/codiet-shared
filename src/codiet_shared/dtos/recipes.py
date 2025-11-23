@@ -41,11 +41,11 @@ class RecipeDTO(TypedDict):
     servings: int
     cooking_time: int
     instructions: list[str]
-    standard_unit_name: str
+    standard_unit_uid: int
     preparation_ingredient_quantities: list[IngredientQuantityDTO]
     composition_ingredient_quantities: list[IngredientQuantityDTO]
     unit_conversions: list[UnitConversionDTO]
-    tags: list[str]
+    tag_uids: list[int]
     quantity: NotRequired[QuantityDTO]
     cost_ratio: NotRequired[CostRatioDTO]
     calories_ratio: NotRequired[CaloriesRatioDTO]
@@ -65,11 +65,11 @@ def is_recipe_dto(obj: Any) -> TypeGuard[RecipeDTO]:
         "description",
         "last_review_date",
         "instructions",
-        "standard_unit_name",
+        "standard_unit_uid",
         "preparation_ingredient_quantities",
         "composition_ingredient_quantities",
         "unit_conversions",
-        "tags",
+        "tag_uids",
         "servings",
         "cooking_time",
     }
@@ -97,7 +97,7 @@ def is_recipe_dto(obj: Any) -> TypeGuard[RecipeDTO]:
         date.fromisoformat(last_review_date)
     except (TypeError, ValueError):
         return False
-    if not isinstance(obj.get("standard_unit_name"), str):
+    if not isinstance(obj.get("standard_unit_uid"), int):
         return False
 
     servings_value = obj.get("servings")
@@ -133,10 +133,10 @@ def is_recipe_dto(obj: Any) -> TypeGuard[RecipeDTO]:
         if not is_unit_conversion_dto(uc):
             return False
 
-    tags = obj.get("tags")
-    if not isinstance(tags, list):
+    tag_uids = obj.get("tag_uids")
+    if not isinstance(tag_uids, list):
         return False
-    if not all(isinstance(tag, str) for tag in tags):
+    if not all(isinstance(tag_uid, int) for tag_uid in tag_uids):
         return False
 
     cooking_time = obj["cooking_time"]
@@ -192,17 +192,17 @@ def is_recipe_dto(obj: Any) -> TypeGuard[RecipeDTO]:
 
 
 class RecipeQuantityDTO(TypedDict):
-    recipe_name: str
-    quantity_unit_name: str
+    recipe_uid: int
+    quantity_unit_uid: int
     quantity_value: float
 
 
 def is_recipe_quantity_dto(obj: Any) -> TypeGuard[RecipeQuantityDTO]:
     return (
         isinstance(obj, dict)
-        and has_only_keys(obj, ("recipe_name", "quantity_unit_name", "quantity_value"))
-        and isinstance(obj.get("recipe_name"), str)
-        and isinstance(obj.get("quantity_unit_name"), str)
+        and has_only_keys(obj, ("recipe_uid", "quantity_unit_uid", "quantity_value"))
+        and isinstance(obj.get("recipe_uid"), int)
+        and isinstance(obj.get("quantity_unit_uid"), int)
         and isinstance(obj.get("quantity_value"), (int, float))
     )
 

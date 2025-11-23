@@ -55,15 +55,15 @@ def is_nutrient_dto(obj: Any) -> TypeGuard[NutrientDTO]:
 
 
 class NutrientFlagDTO(TypedDict):
-    flag_name: str
+    flag_uid: int
     flag_value: bool
 
 
 def is_nutrient_flag_dto(obj: Any) -> TypeGuard[NutrientFlagDTO]:
     return (
         isinstance(obj, dict)
-        and has_only_keys(obj, ("flag_name", "flag_value"))
-        and isinstance(obj.get("flag_name"), str)
+        and has_only_keys(obj, ("flag_uid", "flag_value"))
+        and isinstance(obj.get("flag_uid"), int)
         and isinstance(obj.get("flag_value"), bool)
     )
 
@@ -105,10 +105,10 @@ def is_nutrient_flag_def_dto(obj: Any) -> TypeGuard[NutrientFlagDefDTO]:
 
 
 class NutrientRatioDTO(TypedDict):
-    nutrient_name: str
-    nutrient_mass_unit: str
+    nutrient_uid: int
+    nutrient_mass_unit_uid: int
     nutrient_mass_value: float
-    host_quantity_unit: str
+    host_quantity_unit_uid: int
     host_quantity_value: float
 
 
@@ -118,17 +118,17 @@ def is_nutrient_ratio_dto(obj: Any) -> TypeGuard[NutrientRatioDTO]:
         and has_only_keys(
             obj,
             (
-                "nutrient_name",
-                "nutrient_mass_unit",
+                "nutrient_uid",
+                "nutrient_mass_unit_uid",
                 "nutrient_mass_value",
-                "host_quantity_unit",
+                "host_quantity_unit_uid",
                 "host_quantity_value",
             ),
         )
-        and isinstance(obj.get("nutrient_name"), str)
-        and isinstance(obj.get("nutrient_mass_unit"), str)
+        and isinstance(obj.get("nutrient_uid"), int)
+        and isinstance(obj.get("nutrient_mass_unit_uid"), int)
         and isinstance(obj.get("nutrient_mass_value"), numbers.Real)
-        and isinstance(obj.get("host_quantity_unit"), str)
+        and isinstance(obj.get("host_quantity_unit_uid"), int)
         and isinstance(obj.get("host_quantity_value"), numbers.Real)
     )
 
@@ -143,7 +143,7 @@ class NutrientAttrsDTO(TypedDict):
 
 
 class NutrientMassDTO(TypedDict):
-    nutrient_name: str
+    nutrient_uid: int
     quantity: QuantityDTO
 
 
@@ -151,10 +151,10 @@ def is_nutrient_mass_dto(obj: Any) -> TypeGuard[NutrientMassDTO]:
     if not isinstance(obj, dict):
         return False
 
-    if not has_only_keys(obj, ("nutrient_name", "quantity")):
+    if not has_only_keys(obj, ("nutrient_uid", "quantity")):
         return False
 
-    if not isinstance(obj["nutrient_name"], str):
+    if not isinstance(obj["nutrient_uid"], int):
         return False
 
     if not is_quantity_dto(obj["quantity"]):
