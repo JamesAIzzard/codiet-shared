@@ -101,17 +101,6 @@ class UndefinedIngredientUnitConvError(IngredientError):
         )
 
 
-class NoIngredientQuantitiesError(IngredientError):
-    """Indicates that this entity has no ingredient quantities."""
-
-    def __init__(self) -> None:
-        pass
-
-    @property
-    def message(self) -> str:
-        return "This entity has no ingredient quantities."
-
-
 __all__ = [
     "IngredientError",
     "IngredientDTOError",
@@ -122,5 +111,4 @@ __all__ = [
     "DuplicateIngredientQuantityError",
     "UndefinedIngredientQuantityError",
     "UndefinedIngredientUnitConvError",
-    "NoIngredientQuantitiesError",
 ]

@@ -205,3 +205,13 @@ def is_recipe_quantity_dto(obj: Any) -> TypeGuard[RecipeQuantityDTO]:
         and isinstance(obj.get("quantity_unit_name"), str)
         and isinstance(obj.get("quantity_value"), (int, float))
     )
+
+
+__all__ = [
+    "RecipeIngredientQuantitiesDTO",
+    "RecipeDTO",
+    "is_recipe_dto",
+    "RecipeQuantityDTO",
+    "is_recipe_quantity_dto",
+]
+
