@@ -101,17 +101,16 @@ class UnitConversion(Protocol):
     def name(self) -> UnitConversionKey: ...
 
     @property
-    def unit_names(self) -> UnitConversionKey: ...
+    def unit_uids(self) -> UnitConversionKey: ...
 
-    def get_ratio(self, *, from_unit_name: str, to_unit_name: str) -> float: ...
+    def get_ratio(self, *, from_unit_uid: int, to_unit_uid: int) -> float: ...
 
     @property
     def canonical_unit_value_pairs(
         self,
-    ) -> tuple[tuple[str, float], tuple[str, float]]:
-        """Return ((u1, v1), (u2, v2)) in canonical order."""
-        u1, u2 = sorted(self.unit_names)
-        r = float(self.get_ratio(from_unit_name=u1, to_unit_name=u2))
+    ) -> tuple[tuple[int, float], tuple[int, float]]:
+        u1, u2 = sorted(self.unit_uids)
+        r = float(self.get_ratio(from_unit_uid=u1, to_unit_uid=u2))
         return (u1, 1.0), (u2, r)
 
     def to_dto(self) -> UnitConversionDTO: ...
@@ -121,12 +120,12 @@ class UnitConversion(Protocol):
         return hash((u1, float(v1), u2, float(v2)))
 
     def __eq__(self, other) -> bool:
-        if not (hasattr(other, "unit_names") and hasattr(other, "get_ratio")):
+        if not (hasattr(other, "unit_uids") and hasattr(other, "get_ratio")):
             return NotImplemented
         try:
             (u1, v1), (u2, v2) = self.canonical_unit_value_pairs
-            ou1, ou2 = sorted(other.unit_names)
-            oratio = float(other.get_ratio(from_unit_name=ou1, to_unit_name=ou2))
+            ou1, ou2 = sorted(other.unit_uids)
+            oratio = float(other.get_ratio(from_unit_uid=ou1, to_unit_uid=ou2))
             (ou1p, _), (ou2p, ov2) = (ou1, 1.0), (ou2, oratio)
         except Exception:
             return False
@@ -141,7 +140,7 @@ class UnitConversion(Protocol):
         return self.__str__()
 
 
-type UnitConversionKey = frozenset[str]
+type UnitConversionKey = frozenset[int]
 type UnitConversionKeys = Collection[UnitConversionKey]
 type UnitConversionMap = Mapping[UnitConversionKey, UnitConversion]
 
