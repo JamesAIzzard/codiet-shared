@@ -6,7 +6,7 @@ from .utils import has_only_keys
 
 
 class UnitDTO(TypedDict):
-    uid: int | None
+    uid: int
     name: str
     unit_type: str
     unit_system: str

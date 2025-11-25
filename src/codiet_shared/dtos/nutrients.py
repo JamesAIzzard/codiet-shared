@@ -7,7 +7,7 @@ from .quantities import QuantityDTO, is_quantity_dto
 
 
 class NutrientDTO(TypedDict):
-    uid: int | None
+    uid: int
     name: str
     description: str
     category: str
@@ -69,7 +69,7 @@ def is_nutrient_flag_dto(obj: Any) -> TypeGuard[NutrientFlagDTO]:
 
 
 class NutrientFlagDefDTO(TypedDict):
-    uid: int | None
+    uid: int
     name: str
     parents: list[str]
     directly_excludes_nutrients: list[str]

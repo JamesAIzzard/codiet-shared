@@ -5,7 +5,7 @@ from .utils import has_only_keys
 
 
 class TagDTO(TypedDict):
-    uid: int | None
+    uid: int
     name: str
     parents: list[str]
 

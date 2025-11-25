@@ -9,7 +9,7 @@ from ..exceptions.tags import TagNotFoundError
 @runtime_checkable
 class Tag(GraphNode, Protocol):
     @property
-    def uid(self) -> Optional[int]: ...
+    def uid(self) -> int: ...
 
 
 TagMap = Mapping[str, Tag]
