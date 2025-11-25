@@ -43,7 +43,7 @@ class Unit(Protocol):
     def aliases(self) -> Collection[str]: ...
 
 
-type UnitMap = Mapping[str, Unit]
+type UnitMap = Mapping[int, Unit]
 
 
 @runtime_checkable

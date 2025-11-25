@@ -71,6 +71,16 @@ class DuplicateUnitConversionError(UnitConversionError):
         return f"The unit conversion {self.key} already exists on the entity."
 
 
+class ZeroQuantityInUCError(UnitConversionError):
+    """Raised when a unit conversion has a zero quantity."""
+
+    def __init__(self, key: UnitConversionKey) -> None:
+        self.key: UnitConversionKey = key
+
+    @property
+    def message(self) -> str:
+        return f"The unit conversion {self.key} has a zero quantity."
+
 class UndefinedUnitConversionError(UnitConversionError):
     """Raised when the unit conversion is not defined on the entity."""
 
@@ -102,6 +112,7 @@ __all__ = [
     "UnitConversionError",
     "UnitConversionNotFoundError",
     "DuplicateUnitConversionError",
+    "ZeroQuantityInUCError",
     "UndefinedUnitConversionError",
     "UnitConversionOverconstrainedError",
 ]

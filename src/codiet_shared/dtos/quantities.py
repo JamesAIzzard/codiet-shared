@@ -21,11 +21,21 @@ def is_unit_dto(obj: Any) -> TypeGuard[UnitDTO]:
 
     if not has_only_keys(
         mapping=obj,
-        required=("name", "unit_type", "unit_system", "singular_abbreviation", "plural_abbreviation", "aliases", "uid"),
+        required=(
+            "name",
+            "unit_type",
+            "unit_system",
+            "singular_abbreviation",
+            "plural_abbreviation",
+            "aliases",
+            "uid",
+        ),
         optional=(),
     ):
         return False
 
+    if not isinstance(obj.get("uid"), int):
+        return False
     if not isinstance(obj.get("name"), str):
         return False
     if not isinstance(obj.get("unit_type"), str):
@@ -41,10 +51,6 @@ def is_unit_dto(obj: Any) -> TypeGuard[UnitDTO]:
     if not isinstance(aliases_val, (list, tuple)):
         return False
     if not all(isinstance(a, str) for a in aliases_val):
-        return False
-
-    uid_val = obj.get("uid")
-    if not (isinstance(uid_val, int) or uid_val is None):
         return False
 
     return True
