@@ -11,24 +11,27 @@ class Tag(GraphNode, Protocol):
     @property
     def uid(self) -> int: ...
 
+    @property
+    def name(self) -> str: ...
 
-TagMap = Mapping[str, Tag]
+
+TagMap = Mapping[int, Tag]
 
 
 class HasTags(Protocol):
     @property
     def tags(self) -> TagMap: ...
 
-    def has_tag(self, tag_name: str) -> bool:
-        return tag_name in self.tags
+    def has_tag(self, tag_uid: int) -> bool:
+        return tag_uid in self.tags
 
-    def assert_has_tag(self, tag_name: str) -> None:
-        if not self.has_tag(tag_name):
-            raise TagNotFoundError(tag_name)
+    def assert_has_tag(self, tag_uid: int) -> None:
+        if not self.has_tag(tag_uid):
+            raise TagNotFoundError(tag_uid)
 
-    def get_tag(self, tag_name: str) -> Tag:
-        self.assert_has_tag(tag_name)
-        return self.tags[tag_name]
+    def get_tag(self, tag_uid: int) -> Tag:
+        self.assert_has_tag(tag_uid)
+        return self.tags[tag_uid]
 
 
 __all__ = [

@@ -66,13 +66,15 @@ class NutrientRatioError(NutrientAttrError):
 class UndefinedNutrientRatioError(NutrientRatioError):
     """Raised when the nutrient ratio is not defined on the entity."""
 
-    def __init__(self, *, nutrient_name: str, entity: HasNutrientAttrs) -> None:
-        self.nutrient_name = nutrient_name
+    def __init__(self, *, nutrient_uid: int, entity: HasNutrientAttrs) -> None:
+        self.nutrient_uid = nutrient_uid
         self.entity = entity
 
     @property
     def message(self) -> str:
-        return f"{self.nutrient_name} is not defined on this entity."
+        return (
+            f"A ratio for nutrient #{self.nutrient_uid} is not defined on this entity."
+        )
 
 
 class DuplicateNutrientRatioError(NutrientRatioError):
@@ -101,13 +103,16 @@ class UnknownNutrientFlagError(NutrientFlagError):
 class UndefinedNutrientFlagError(NutrientFlagError):
     """Raised when the nutrient flag is not defined on the entity."""
 
-    def __init__(self, *, flag_name: str, entity: HasNutrientAttrs) -> None:
-        self.flag_name = flag_name
+    def __init__(self, *, flag_def_uid: int, entity: HasNutrientAttrs) -> None:
+        self.flag_def_uid = flag_def_uid
         self.has_nutrient_attrs = entity
 
     @property
     def message(self) -> str:
-        return f"The nutrient flag {self.flag_name} is undefined on this entity."
+        return (
+            f"A nutrient flag with definition UID {self.flag_def_uid} is not "
+            f"defined on this entity."
+        )
 
 
 class ExcludedNutrientError(NutrientAttrError):
@@ -297,14 +302,14 @@ class UndefinedNutrientMassError(NutrientMassError):
     """Raised when the nutrient mass is not defined on the entity."""
 
     def __init__(
-        self, *, nutrient_name: str, has_nutrient_masses: HasNutrientMasses
+        self, *, nutrient_uid: int, has_nutrient_masses: HasNutrientMasses
     ) -> None:
-        self.nutrient_name = nutrient_name
+        self.nutrient_uid = nutrient_uid
         self.has_nutrient_masses = has_nutrient_masses
 
     @property
     def message(self) -> str:
-        return f"No mass is defined for {self.nutrient_name} on the entity."
+        return f"No mass is defined for nutrient #{self.nutrient_uid} on the entity."
 
 
 __all__ = [

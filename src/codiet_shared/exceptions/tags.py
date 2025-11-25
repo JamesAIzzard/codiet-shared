@@ -17,22 +17,21 @@ class UnknownTagError(TagError):
 
 
 class TagNotFoundError(TagError):
-    def __init__(self, key: str) -> None:
-        self.key: str = key
+    def __init__(self, uid: int) -> None:
+        self.uid: int = uid
 
     @property
     def message(self) -> str:
-        return f"The tag {self.key} was not found on the entity."
+        return f"The tag {self.uid} was not found on the entity."
 
 
 class DuplicateTagError(TagError):
-    def __init__(self, key: str) -> None:
-        self.key = key
+    def __init__(self, uid: int) -> None:
+        self.uid = uid
 
     @property
     def message(self) -> str:
-        return f"The tag {self.key} already exists on the entity."
-
+        return f"The tag {self.uid} already exists on the entity."
 
 __all__ = [
     "TagError",

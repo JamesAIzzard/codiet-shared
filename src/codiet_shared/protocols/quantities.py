@@ -98,17 +98,16 @@ class UnitConversion(Protocol):
     def uid(self) -> Optional[int]: ...
 
     @property
-    def name(self) -> UnitConversionKey: ...
-
-    @property
     def unit_uids(self) -> UnitConversionKey: ...
 
     def get_ratio(self, *, from_unit_uid: int, to_unit_uid: int) -> float: ...
 
     @property
-    def canonical_unit_value_pairs(
+    def canonical_rep(
         self,
     ) -> tuple[tuple[int, float], tuple[int, float]]:
+        """Returns a canonical representation of the conversion as
+        ((unit_uid_1, unit_value_1), (unit_uid_2, unit_value_2))."""
         u1, u2 = sorted(self.unit_uids)
         r = float(self.get_ratio(from_unit_uid=u1, to_unit_uid=u2))
         return (u1, 1.0), (u2, r)
@@ -116,14 +115,14 @@ class UnitConversion(Protocol):
     def to_dto(self) -> UnitConversionDTO: ...
 
     def __hash__(self) -> int:
-        (u1, v1), (u2, v2) = self.canonical_unit_value_pairs
+        (u1, v1), (u2, v2) = self.canonical_rep
         return hash((u1, float(v1), u2, float(v2)))
 
     def __eq__(self, other) -> bool:
         if not (hasattr(other, "unit_uids") and hasattr(other, "get_ratio")):
             return NotImplemented
         try:
-            (u1, v1), (u2, v2) = self.canonical_unit_value_pairs
+            (u1, v1), (u2, v2) = self.canonical_rep
             ou1, ou2 = sorted(other.unit_uids)
             oratio = float(other.get_ratio(from_unit_uid=ou1, to_unit_uid=ou2))
             (ou1p, _), (ou2p, ov2) = (ou1, 1.0), (ou2, oratio)
@@ -133,7 +132,7 @@ class UnitConversion(Protocol):
         return u1 == ou1p and u2 == ou2p and isclose(v2, ov2)
 
     def __str__(self) -> str:
-        (u1, v1), (u2, v2) = self.canonical_unit_value_pairs
+        (u1, v1), (u2, v2) = self.canonical_rep
         return f"{v1}{u1} <-> {v2}{u2}"
 
     def __repr__(self) -> str:

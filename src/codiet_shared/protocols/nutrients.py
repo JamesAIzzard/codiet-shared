@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Protocol, runtime_checkable, Optional, Collection, Mapping
+from typing import Protocol, runtime_checkable, Collection, Mapping
 
 from pygraph import TreeNode, GraphNode
 
@@ -17,6 +17,9 @@ from ..utils import sig_fig_fmt
 class Nutrient(TreeNode, Protocol):
     @property
     def uid(self) -> int: ...
+
+    @property
+    def name(self) -> str: ...
 
     @property
     def calories_per_gram(self) -> float: ...
@@ -49,7 +52,7 @@ class Nutrient(TreeNode, Protocol):
         )
 
 
-NutrientMap = Mapping[str, Nutrient]
+NutrientMap = Mapping[int, Nutrient]
 
 
 @runtime_checkable
@@ -64,7 +67,7 @@ class NutrientFlagDefinition(GraphNode, Protocol):
     def directly_excludes_nutrients(self) -> Collection[str]: ...
 
 
-NutrientFlagDefinitionMap = Mapping[str, NutrientFlagDefinition]
+NutrientFlagDefinitionMap = Mapping[int, NutrientFlagDefinition]
 
 
 @runtime_checkable
@@ -100,7 +103,7 @@ class NutrientFlag(GraphNode, Protocol):
     def to_dto(self) -> NutrientFlagDTO: ...
 
 
-NutrientFlagMap = Mapping[str, NutrientFlag]
+NutrientFlagMap = Mapping[int, NutrientFlag]
 
 
 @runtime_checkable
@@ -148,7 +151,7 @@ class NutrientRatio(Protocol):
     def to_dto(self) -> NutrientRatioDTO: ...
 
 
-NutrientRatioMap = Mapping[str, NutrientRatio]
+NutrientRatioMap = Mapping[int, NutrientRatio]
 
 
 @runtime_checkable
@@ -178,33 +181,33 @@ class HasNutrientAttrs(Protocol):
     @property
     def nutrient_ratios(self) -> NutrientRatioMap: ...
 
-    def nutrient_ratio_is_defined(self, nutrient_name: str) -> bool:
-        return nutrient_name in self.nutrient_ratios
+    def nutrient_ratio_is_defined(self, *, nutrient_uid: int) -> bool:
+        return nutrient_uid in self.nutrient_ratios
 
-    def nutrient_flag_is_defined(self, flag_name: str) -> bool:
-        return flag_name in self.nutrient_flags
+    def nutrient_flag_is_defined(self, *, flag_def_uid: int) -> bool:
+        return flag_def_uid in self.nutrient_flags
+    
+    def assert_nutrient_ratio_defined(self, nutrient_uid: int) -> None:
+        if not self.nutrient_ratio_is_defined(nutrient_uid=nutrient_uid):
+            raise UndefinedNutrientRatioError(nutrient_uid=nutrient_uid, entity=self)
 
-    def assert_nutrient_ratio_defined(self, nutrient_name: str) -> None:
-        if not self.nutrient_ratio_is_defined(nutrient_name):
-            raise UndefinedNutrientRatioError(nutrient_name=nutrient_name, entity=self)
+    def assert_nutrient_flag_defined(self, flag_def_uid: int) -> None:
+        if not self.nutrient_flag_is_defined(flag_def_uid=flag_def_uid):
+            raise UndefinedNutrientFlagError(flag_def_uid=flag_def_uid, entity=self)
 
-    def assert_nutrient_flag_defined(self, flag_name: str) -> None:
-        if not self.nutrient_flag_is_defined(flag_name):
-            raise UndefinedNutrientFlagError(flag_name=flag_name, entity=self)
+    def get_nutrient_flag(self, flag_def_uid: int) -> NutrientFlag:
+        self.assert_nutrient_flag_defined(flag_def_uid)
+        return self.nutrient_flags[flag_def_uid]
 
-    def get_nutrient_flag(self, flag_name: str) -> NutrientFlag:
-        self.assert_nutrient_flag_defined(flag_name)
-        return self.nutrient_flags[flag_name]
-
-    def get_nutrient_ratio(self, nutrient_name: str) -> NutrientRatio:
-        self.assert_nutrient_ratio_defined(nutrient_name)
-        return self.nutrient_ratios[nutrient_name]
-
+    def get_nutrient_ratio(self, nutrient_uid: int) -> NutrientRatio:
+        self.assert_nutrient_ratio_defined(nutrient_uid)
+        return self.nutrient_ratios[nutrient_uid]
 
 @runtime_checkable
 class NutrientMass(IsQuantified, Protocol):
     @property
     def nutrient(self) -> Nutrient: ...
+
     @property
     def nutrient_name(self) -> str:
         return self.nutrient.name
@@ -212,22 +215,22 @@ class NutrientMass(IsQuantified, Protocol):
     def to_dto(self) -> NutrientMassDTO: ...
 
 
-NutrientMassMap = Mapping[str, NutrientMass]
+NutrientMassMap = Mapping[int, NutrientMass]
 
 
 class HasNutrientMasses(HasNutrientAttrs, IsQuantified, Protocol):
     @property
     def nutrient_masses(self) -> NutrientMassMap: ...
 
-    def nutrient_mass_is_defined(self, nutrient_name: str) -> bool:
-        return nutrient_name in self.nutrient_masses
+    def nutrient_mass_is_defined(self, *, nutrient_uid: int) -> bool:
+        return nutrient_uid in self.nutrient_masses
 
-    def assert_nutrient_mass_defined(self, nutrient_name: str) -> None:
-        if not self.nutrient_mass_is_defined(nutrient_name):
+    def assert_nutrient_mass_defined(self, *, nutrient_uid: int) -> None:
+        if not self.nutrient_mass_is_defined(nutrient_uid=nutrient_uid):
             raise UndefinedNutrientMassError(
-                nutrient_name=nutrient_name, has_nutrient_masses=self
+                nutrient_uid=nutrient_uid, has_nutrient_masses=self
             )
 
-    def get_nutrient_mass(self, nutrient_name: str) -> NutrientMass:
-        self.assert_nutrient_mass_defined(nutrient_name)
-        return self.nutrient_masses[nutrient_name]
+    def get_nutrient_mass(self, *, nutrient_uid: int) -> NutrientMass:
+        self.assert_nutrient_mass_defined(nutrient_uid=nutrient_uid)
+        return self.nutrient_masses[nutrient_uid]
