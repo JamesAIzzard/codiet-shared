@@ -14,12 +14,12 @@ class UnitError(CodietException):
 class UnknownUnitError(UnitError):
     """A unit is unknown to the system."""
 
-    def __init__(self, key: str) -> None:
-        self.key: str = key
+    def __init__(self, uid: int) -> None:
+        self.uid: int = uid
 
     @property
     def message(self) -> str:
-        return f"The unit {self.key} is unknown to the system."
+        return f"The unit #{self.uid} is unknown to the system."
 
 
 class QuantityError(CodietException):
@@ -52,12 +52,13 @@ class UnitConversionError(CodietException):
 class UnitConversionNotFoundError(UnitConversionError):
     """Raised when a unit conversion is not found."""
 
-    def __init__(self, key: UnitConversionKey) -> None:
-        self.key: UnitConversionKey = key
-
-    @property
-    def message(self) -> str:
-        return f"The unit conversion {self.key} was not found."
+    def __init__(
+        self, key: UnitConversionKey | None = None, uid: int | None = None
+    ) -> None:
+        if key is None and uid is None:
+            raise ValueError("Either key or uid must be provided.")
+        self.key: UnitConversionKey | None = key
+        self.uid: int | None = uid
 
 
 class DuplicateUnitConversionError(UnitConversionError):
@@ -80,6 +81,7 @@ class ZeroQuantityInUCError(UnitConversionError):
     @property
     def message(self) -> str:
         return f"The unit conversion {self.key} has a zero quantity."
+
 
 class UndefinedUnitConversionError(UnitConversionError):
     """Raised when the unit conversion is not defined on the entity."""
