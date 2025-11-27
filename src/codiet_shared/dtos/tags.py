@@ -7,7 +7,7 @@ from .utils import has_only_keys
 class TagDTO(TypedDict):
     uid: int
     name: str
-    parents: list[str]
+    parents: list[int]
 
 
 def is_tag_dto(obj: Any) -> TypeGuard[TagDTO]:
@@ -23,7 +23,7 @@ def is_tag_dto(obj: Any) -> TypeGuard[TagDTO]:
     parents = obj.get("parents")
     if not isinstance(parents, list):
         return False
-    if not all(isinstance(p, str) for p in parents):
+    if not all(isinstance(p, int) for p in parents):
         return False
 
     uid_val = obj.get("uid")
