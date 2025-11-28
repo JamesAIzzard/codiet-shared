@@ -27,7 +27,7 @@ class HasTags(Protocol):
 
     def assert_has_tag(self, tag_uid: int) -> None:
         if not self.has_tag(tag_uid):
-            raise TagNotFoundError(tag_uid)
+            raise TagNotFoundError(uid=tag_uid)
 
     def get_tag(self, tag_uid: int) -> Tag:
         self.assert_has_tag(tag_uid)

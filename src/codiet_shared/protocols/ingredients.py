@@ -89,23 +89,23 @@ class IngredientQuantity(HasNutrientMasses, HasCost, Protocol):
         return hash(self) == hash(other)
 
 
-IngredientQuantityMap = Mapping[str, IngredientQuantity]
+IngredientQuantityMap = Mapping[int, IngredientQuantity]
 
 
 class HasIngredientQuantities(Protocol):
     @property
     def ingredient_quantities(self) -> IngredientQuantityMap: ...
 
-    def has_ingredient_quantity(self, ingredient_name: str) -> bool:
-        return ingredient_name in self.ingredient_quantities
+    def has_ingredient_quantity(self, ingredient_uid: int) -> bool:
+        return ingredient_uid in self.ingredient_quantities
 
-    def assert_has_ingredient_quantity(self, ingredient_name: str) -> None:
-        if not self.has_ingredient_quantity(ingredient_name):
-            raise UndefinedIngredientQuantityError(ingredient_name=ingredient_name)
+    def assert_has_ingredient_quantity(self, ingredient_uid: int) -> None:
+        if not self.has_ingredient_quantity(ingredient_uid):
+            raise UndefinedIngredientQuantityError(ingredient_uid=ingredient_uid)
 
-    def get_ingredient_quantity(self, ingredient_name: str) -> IngredientQuantity:
-        self.assert_has_ingredient_quantity(ingredient_name)
-        return self.ingredient_quantities[ingredient_name]
+    def get_ingredient_quantity(self, ingredient_uid: int) -> IngredientQuantity:
+        self.assert_has_ingredient_quantity(ingredient_uid)
+        return self.ingredient_quantities[ingredient_uid]
 
 
 __all__ = [

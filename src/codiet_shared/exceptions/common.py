@@ -1,25 +1,17 @@
-from typing import Any
-
-
 class CodietException(Exception):
-    """Base exception for Codiet-related errors."""
+    """Base class for all Codiet-related exceptions."""
 
     def __str__(self) -> str:
-        return self.message
-
-    @property
-    def message(self) -> str:
-        return self.__class__.__name__
+        return "A Codiet-related error occurred."
 
 
 class InvalidDTOError(CodietException):
     """Raised when a DTO is invalid."""
 
-    def __init__(self, dto: Any) -> None:
+    def __init__(self, dto: dict) -> None:
         self.dto = dto
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"Invalid DTO: {self.dto}"
 
 

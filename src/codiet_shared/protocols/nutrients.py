@@ -71,12 +71,20 @@ NutrientFlagDefinitionMap = Mapping[int, NutrientFlagDefinition]
 
 
 @runtime_checkable
-class NutrientFlag(GraphNode, Protocol):
+class NutrientFlag(Protocol):
     @property
     def value(self) -> bool: ...
 
     @property
     def definition(self) -> NutrientFlagDefinition: ...
+
+    @property
+    def name(self) -> str:
+        return self.definition.name
+
+    @property
+    def flag_def_uid(self) -> int:
+        return self.definition.uid
 
     @property
     def is_true(self) -> bool:
@@ -186,7 +194,7 @@ class HasNutrientAttrs(Protocol):
 
     def nutrient_flag_is_defined(self, *, flag_def_uid: int) -> bool:
         return flag_def_uid in self.nutrient_flags
-    
+
     def assert_nutrient_ratio_defined(self, nutrient_uid: int) -> None:
         if not self.nutrient_ratio_is_defined(nutrient_uid=nutrient_uid):
             raise UndefinedNutrientRatioError(nutrient_uid=nutrient_uid, entity=self)
@@ -202,6 +210,7 @@ class HasNutrientAttrs(Protocol):
     def get_nutrient_ratio(self, nutrient_uid: int) -> NutrientRatio:
         self.assert_nutrient_ratio_defined(nutrient_uid)
         return self.nutrient_ratios[nutrient_uid]
+
 
 @runtime_checkable
 class NutrientMass(IsQuantified, Protocol):

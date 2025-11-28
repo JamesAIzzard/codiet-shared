@@ -22,7 +22,15 @@ def is_nutrient_dto(obj: Any) -> TypeGuard[NutrientDTO]:
 
     if not has_only_keys(
         mapping=obj,
-        required=("name", "description", "category", "parent", "calories_per_gram", "aliases", "uid"),
+        required=(
+            "name",
+            "description",
+            "category",
+            "parent",
+            "calories_per_gram",
+            "aliases",
+            "uid",
+        ),
         optional=(),
     ):
         return False
@@ -55,14 +63,14 @@ def is_nutrient_dto(obj: Any) -> TypeGuard[NutrientDTO]:
 
 
 class NutrientFlagDTO(TypedDict):
-    flag_uid: int
+    flag_def_uid: int
     flag_value: bool
 
 
 def is_nutrient_flag_dto(obj: Any) -> TypeGuard[NutrientFlagDTO]:
     return (
         isinstance(obj, dict)
-        and has_only_keys(obj, ("flag_uid", "flag_value"))
+        and has_only_keys(obj, ("flag_def_uid", "flag_value"))
         and isinstance(obj.get("flag_uid"), int)
         and isinstance(obj.get("flag_value"), bool)
     )

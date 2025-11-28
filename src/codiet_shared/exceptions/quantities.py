@@ -7,8 +7,18 @@ if TYPE_CHECKING:
     from ..protocols.quantities import UnitConversionKey
 
 
+# Many of the other domain entities exclusively use UID to identify instances.
+# Unit conversions are a more interesting case, because they are stored as singleton
+# instances independently (for the constant conversions - e.g., gram to kilogram)
+# but are also associated with entities (e.g., an ingredient has a unit conversion
+# for cup to gram). Therefore, we always use key-based identification for
+# unit conversions.
+
 class UnitError(CodietException):
     """Base Unit error."""
+
+    def __str__(self) -> str:
+        return "A unit-related error occurred."
 
 
 class UnknownUnitError(UnitError):
@@ -17,13 +27,15 @@ class UnknownUnitError(UnitError):
     def __init__(self, uid: int) -> None:
         self.uid: int = uid
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"The unit #{self.uid} is unknown to the system."
 
 
 class QuantityError(CodietException):
     """General base class for quantity errors."""
+
+    def __str__(self) -> str:
+        return "A quantity-related error occurred."
 
 
 class NegativeQuantityError(QuantityError):
@@ -32,33 +44,32 @@ class NegativeQuantityError(QuantityError):
     def __init__(self, quantity: float):
         self.quantity = quantity
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"The quantity is negative: {self.quantity}."
 
 
 class ZeroQuantityError(QuantityError):
     """Raised when a quantity is zero."""
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return "The quantity is zero."
 
 
 class UnitConversionError(CodietException):
     """Base class for unit conversion errors."""
 
+    def __str__(self) -> str:
+        return "A unit conversion-related error occurred."
+
 
 class UnitConversionNotFoundError(UnitConversionError):
     """Raised when a unit conversion is not found."""
 
-    def __init__(
-        self, key: UnitConversionKey | None = None, uid: int | None = None
-    ) -> None:
-        if key is None and uid is None:
-            raise ValueError("Either key or uid must be provided.")
-        self.key: UnitConversionKey | None = key
-        self.uid: int | None = uid
+    def __init__(self, key: UnitConversionKey) -> None:
+        self.key: UnitConversionKey = key
+
+    def __str__(self) -> str:
+        return f"The unit conversion {self.key} was not found."
 
 
 class DuplicateUnitConversionError(UnitConversionError):
@@ -67,8 +78,7 @@ class DuplicateUnitConversionError(UnitConversionError):
     def __init__(self, key: UnitConversionKey):
         self.key = key
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"The unit conversion {self.key} already exists on the entity."
 
 
@@ -78,8 +88,7 @@ class ZeroQuantityInUCError(UnitConversionError):
     def __init__(self, key: UnitConversionKey) -> None:
         self.key: UnitConversionKey = key
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"The unit conversion {self.key} has a zero quantity."
 
 
@@ -89,8 +98,7 @@ class UndefinedUnitConversionError(UnitConversionError):
     def __init__(self, key: UnitConversionKey) -> None:
         self.key: UnitConversionKey = key
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"The unit conversion {self.key} is not defined on the entity."
 
 
@@ -100,8 +108,7 @@ class UnitConversionOverconstrainedError(UnitConversionError):
     def __init__(self, key: UnitConversionKey):
         self.key = key
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"The unit conversion {self.key} would overconstrain the entity."
 
 
