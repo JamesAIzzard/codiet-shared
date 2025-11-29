@@ -7,7 +7,7 @@ from ..exceptions.tags import TagNotFoundError
 
 
 @runtime_checkable
-class Tag(GraphNode, Protocol):
+class Tag(GraphNode[int], Protocol):
     @property
     def uid(self) -> int: ...
 

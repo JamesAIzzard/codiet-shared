@@ -14,7 +14,7 @@ from ..utils import sig_fig_fmt
 
 
 @runtime_checkable
-class Nutrient(TreeNode, Protocol):
+class Nutrient(TreeNode[int], Protocol):
     @property
     def uid(self) -> int: ...
 
@@ -56,7 +56,7 @@ NutrientMap = Mapping[int, Nutrient]
 
 
 @runtime_checkable
-class NutrientFlagDefinition(GraphNode, Protocol):
+class NutrientFlagDefinition(GraphNode[int], Protocol):
     @property
     def uid(self) -> int: ...
 
@@ -64,7 +64,7 @@ class NutrientFlagDefinition(GraphNode, Protocol):
     def name(self) -> str: ...
 
     @property
-    def directly_excludes_nutrients(self) -> Collection[str]: ...
+    def directly_excludes_nutrients(self) -> Collection[int]: ...
 
 
 NutrientFlagDefinitionMap = Mapping[int, NutrientFlagDefinition]

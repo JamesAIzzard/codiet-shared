@@ -19,7 +19,12 @@ packages = [
 requires-poetry = ">=2.0"
 
 [tool.poetry.dependencies]
-pygraph = { git = "git@github.com:JamesAIzzard/pygraph.git", rev = "main" }
+pygraph = {path = "../pygraph", develop = true}
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.8"
+mypy = "^1.13"
+pytest = "^8.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

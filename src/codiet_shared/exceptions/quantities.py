@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
 from ..exceptions.common import CodietException
 
@@ -24,11 +24,20 @@ class UnitError(CodietException):
 class UnknownUnitError(UnitError):
     """A unit is unknown to the system."""
 
-    def __init__(self, uid: int) -> None:
-        self.uid: int = uid
+    @overload
+    def __init__(self, *, uid: int) -> None: ...
+
+    @overload
+    def __init__(self, *, name: str) -> None: ...
+
+    def __init__(self, *, uid: int | None = None, name: str | None = None) -> None:
+        self.uid = uid
+        self.name = name
 
     def __str__(self) -> str:
-        return f"The unit #{self.uid} is unknown to the system."
+        if self.uid is not None:
+            return f"The unit #{self.uid} is unknown to the system."
+        return f"The unit '{self.name}' is unknown to the system."
 
 
 class QuantityError(CodietException):

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Hashable, TYPE_CHECKING
+from typing import overload, TYPE_CHECKING
 
 from .common import CodietException
 
@@ -12,6 +12,13 @@ class RecipeError(CodietException):
 
     def __str__(self) -> str:
         return "A recipe-related error occurred."
+
+
+class RecipeMissingUIDError(RecipeError):
+    """Raised when a recipe is missing a UID."""
+
+    def __str__(self) -> str:
+        return "The recipe is missing a UID."
 
 
 class UnnamedRecipeError(RecipeError):
@@ -57,11 +64,20 @@ class NoCookingTimeError(RecipeError):
 class RecipeNotFoundError(RecipeError):
     """Raised when a recipe is not found."""
 
-    def __init__(self, key: Hashable):
-        self.key: Hashable = key
+    @overload
+    def __init__(self, *, uid: int) -> None: ...
+
+    @overload
+    def __init__(self, *, name: str) -> None: ...
+
+    def __init__(self, *, uid: int | None = None, name: str | None = None) -> None:
+        self.uid = uid
+        self.name = name
 
     def __str__(self) -> str:
-        return f"Recipe with key '{self.key}' not found."
+        if self.uid is not None:
+            return f"Recipe with UID '{self.uid}' not found."
+        return f"Recipe with name '{self.name}' not found."
 
 
 class DuplicateRecipeError(RecipeError):
@@ -86,6 +102,7 @@ class NoIngredientQuantitiesError(RecipeError):
 
 __all__ = [
     "RecipeError",
+    "RecipeMissingUIDError",
     "UnnamedRecipeError",
     "NoRecipeDescriptionError",
     "NoTypicalServiceSizeError",

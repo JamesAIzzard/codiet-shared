@@ -1,9 +1,8 @@
 from __future__ import annotations
-from typing import Optional
+
+from typing import overload
 
 from .common import CodietException
-
-from ..protocols.ingredients import Ingredient
 
 
 class IngredientError(CodietException):
@@ -21,6 +20,13 @@ class IngredientDTOError(IngredientError):
 
     def __str__(self) -> str:
         return f"Invalid ingredient JSON: {self.json}"
+
+
+class IngredientMissingUIDError(IngredientError):
+    """Indicates that an ingredient is missing a UID."""
+
+    def __str__(self) -> str:
+        return "Ingredient is missing a UID."
 
 
 class UnnamedIngredientError(IngredientError):
@@ -41,23 +47,32 @@ class NoIngredientDescriptionError(IngredientError):
 
 
 class IngredientNotFoundError(IngredientError):
-    """Indicates that an ingredient with this namewas not found in the repository."""
+    """Indicates that an ingredient was not found in the repository."""
 
-    def __init__(self, uid: int) -> None:
+    @overload
+    def __init__(self, *, uid: int) -> None: ...
+
+    @overload
+    def __init__(self, *, name: str) -> None: ...
+
+    def __init__(self, *, uid: int | None = None, name: str | None = None) -> None:
         self.uid = uid
+        self.name = name
 
     def __str__(self) -> str:
-        return f"Ingredient with UID '{self.uid}' not found in repository"
+        if self.uid is not None:
+            return f"Ingredient with UID '{self.uid}' not found in repository."
+        return f"Ingredient with name '{self.name}' not found in repository."
 
 
 class DuplicateIngredientError(IngredientError):
     """Indicates that an ingredient with this uid already exists in the repository."""
 
-    def __init__(self, ingredient_uid: int) -> None:
-        self.uid = ingredient_uid
+    def __init__(self, ingredient_name: str) -> None:
+        self.ingredient_name = ingredient_name
 
     def __str__(self) -> str:
-        return f"Ingredient with UID '{self.uid}' already exists."
+        return f"Ingredient with name '{self.ingredient_name}' already exists."
 
 
 class DuplicateIngredientQuantityError(IngredientError):
@@ -104,6 +119,7 @@ class UndefinedIngredientUnitConvError(IngredientError):
 __all__ = [
     "IngredientError",
     "IngredientDTOError",
+    "IngredientMissingUIDError",
     "UnnamedIngredientError",
     "NoIngredientDescriptionError",
     "IngredientNotFoundError",

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Collection
+from typing import TYPE_CHECKING, Collection, overload
 
 from ..exceptions.common import CodietException
 from ..utils import sig_fig_fmt
@@ -24,11 +24,20 @@ class NutrientError(CodietException):
 class UnknownNutrientError(NutrientError):
     """A nutrient is unknown to the system."""
 
-    def __init__(self, uid: int) -> None:
-        self.uid: int = uid
+    @overload
+    def __init__(self, *, uid: int) -> None: ...
+
+    @overload
+    def __init__(self, *, name: str) -> None: ...
+
+    def __init__(self, *, uid: int | None = None, name: str | None = None) -> None:
+        self.uid = uid
+        self.name = name
 
     def __str__(self) -> str:
-        return f"The nutrient {self.uid} is unknown to the system."
+        if self.uid is not None:
+            return f"The nutrient #{self.uid} is unknown to the system."
+        return f"The nutrient '{self.name}' is unknown to the system."
 
 
 class NutrientAliasCollisionError(NutrientError):
@@ -95,11 +104,22 @@ class DuplicateNutrientRatioError(NutrientRatioError):
 class UnknownNutrientFlagError(NutrientFlagError):
     """Raised when the nutrient flag is not known to the system."""
 
-    def __init__(self, flag_def_uid: str) -> None:
+    @overload
+    def __init__(self, *, flag_def_uid: int) -> None: ...
+
+    @overload
+    def __init__(self, *, name: str) -> None: ...
+
+    def __init__(
+        self, *, flag_def_uid: int | None = None, name: str | None = None
+    ) -> None:
         self.flag_def_uid = flag_def_uid
+        self.name = name
 
     def __str__(self) -> str:
-        return f"The nutrient flag #{self.flag_def_uid} is not known to the system."
+        if self.flag_def_uid is not None:
+            return f"The nutrient flag #{self.flag_def_uid} is not known to the system."
+        return f"The nutrient flag '{self.name}' is not known to the system."
 
 
 class UndefinedNutrientFlagError(NutrientFlagError):

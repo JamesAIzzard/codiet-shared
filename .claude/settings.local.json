@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd:*)",
+      "Bash(poetry run mypy:*)",
+      "Bash(poetry run pytest:*)",
+      "Bash(cmd /c \"poetry run pytest -q\")",
+      "Bash(cmd /c \"poetry run mypy .\")",
+      "Bash(powershell -Command \"poetry run pytest -q\":*)",
+      "Bash(cmd /c \"cd /d c:\\Users\\James\\Documents\\codiet-shared && poetry run mypy .\")",
+      "Bash(cmd /c \"cd /d c:\\Users\\James\\Documents\\codiet-shared && poetry run mypy . 2>&1\")",
+      "Bash(powershell -Command \"cd ''c:\\Users\\James\\Documents\\codiet-shared''; poetry run mypy .\")",
+      "Bash(powershell -Command \"cd ''c:\\Users\\James\\Documents\\codiet-shared''; poetry run python -m mypy .\")",
+      "Bash(powershell -Command \"cd ''c:\\Users\\James\\Documents\\codiet-shared''; poetry install\")",
+      "Bash(powershell -Command \"cd ''c:\\Users\\James\\Documents\\codiet-shared''; poetry lock; poetry install\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

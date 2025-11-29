@@ -11,7 +11,7 @@ class NutrientDTO(TypedDict):
     name: str
     description: str
     category: str
-    parent: Optional[str]
+    parent: Optional[int]
     calories_per_gram: float
     aliases: list[str]
 
@@ -43,7 +43,7 @@ def is_nutrient_dto(obj: Any) -> TypeGuard[NutrientDTO]:
         return False
 
     parent_val = obj.get("parent")
-    if not (isinstance(parent_val, str) or parent_val is None):
+    if not (isinstance(parent_val, int) or parent_val is None):
         return False
 
     if not isinstance(obj.get("calories_per_gram"), numbers.Real):
@@ -71,7 +71,7 @@ def is_nutrient_flag_dto(obj: Any) -> TypeGuard[NutrientFlagDTO]:
     return (
         isinstance(obj, dict)
         and has_only_keys(obj, ("flag_def_uid", "flag_value"))
-        and isinstance(obj.get("flag_uid"), int)
+        and isinstance(obj.get("flag_def_uid"), int)
         and isinstance(obj.get("flag_value"), bool)
     )
 
@@ -79,8 +79,8 @@ def is_nutrient_flag_dto(obj: Any) -> TypeGuard[NutrientFlagDTO]:
 class NutrientFlagDefDTO(TypedDict):
     uid: int
     name: str
-    parents: list[str]
-    directly_excludes_nutrients: list[str]
+    parents: list[int]
+    directly_excludes_nutrients: list[int]
 
 
 def is_nutrient_flag_def_dto(obj: Any) -> TypeGuard[NutrientFlagDefDTO]:
@@ -98,11 +98,11 @@ def is_nutrient_flag_def_dto(obj: Any) -> TypeGuard[NutrientFlagDefDTO]:
         return False
     if not isinstance(obj.get("parents"), list):
         return False
-    if not all(isinstance(p, str) for p in obj.get("parents", [])):
+    if not all(isinstance(p, int) for p in obj.get("parents", [])):
         return False
     if not isinstance(obj.get("directly_excludes_nutrients"), list):
         return False
-    if not all(isinstance(n, str) for n in obj.get("directly_excludes_nutrients", [])):
+    if not all(isinstance(n, int) for n in obj.get("directly_excludes_nutrients", [])):
         return False
 
     uid_val = obj.get("uid")
