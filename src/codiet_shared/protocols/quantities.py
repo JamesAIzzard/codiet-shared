@@ -98,10 +98,6 @@ class UnitConversion(Protocol):
     def uid(self) -> Optional[int]: ...
 
     @property
-    def name(self) -> str:
-        return str(self.unit_uids)
-
-    @property
     def unit_uids(self) -> UnitConversionKey: ...
 
     def get_ratio(self, *, from_unit_uid: int, to_unit_uid: int) -> float: ...
