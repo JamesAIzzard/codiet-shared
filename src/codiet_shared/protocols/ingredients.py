@@ -26,7 +26,7 @@ class Ingredient(
     def last_review_date(self) -> str: ...
 
     @property
-    def standard_unit_name(self) -> str: ...
+    def standard_unit_uid(self) -> int: ...
 
     @property
     def gi(self) -> Optional[float]: ...
@@ -41,7 +41,7 @@ class Ingredient(
             (
                 self.name,
                 self.description,
-                self.standard_unit_name,
+                self.standard_unit_uid,
                 self.gi,
                 self.use_as_recipe,
                 frozenset((k, hash(v)) for k, v in self.unit_conversions.items()),

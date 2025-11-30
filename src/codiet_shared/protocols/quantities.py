@@ -166,7 +166,7 @@ class HasUnitConversions(Protocol):
 
 class HasStandardUnit(Protocol):
     @property
-    def standard_unit_name(self) -> str: ...
+    def standard_unit_uid(self) -> int: ...
 
 
 __all__ = [
