@@ -24,9 +24,6 @@ class RecipeMissingUIDError(RecipeError):
 class UnnamedRecipeError(RecipeError):
     """Raised when a recipe has no name."""
 
-    def __init__(self, recipe: Recipe) -> None:
-        self.recipe = recipe
-
     def __str__(self) -> str:
         return "The recipe has no name."
 
