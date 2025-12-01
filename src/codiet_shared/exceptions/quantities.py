@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 # for cup to gram). Therefore, we always use key-based identification for
 # unit conversions.
 
+
 class UnitError(CodietException):
     """Base Unit error."""
 
@@ -99,6 +100,16 @@ class ZeroQuantityInUCError(UnitConversionError):
 
     def __str__(self) -> str:
         return f"The unit conversion {self.key} has a zero quantity."
+
+
+class SameUnitConversionError(UnitConversionError):
+    """Raised when a unit conversion has the same from and to units."""
+
+    def __init__(self, key: UnitConversionKey) -> None:
+        self.key: UnitConversionKey = key
+
+    def __str__(self) -> str:
+        return f"The unit conversion {self.key} has the same from and to units."
 
 
 class UndefinedUnitConversionError(UnitConversionError):

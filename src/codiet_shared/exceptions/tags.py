@@ -1,3 +1,6 @@
+from __future__ import annotations
+from typing import overload
+
 from codiet_shared.exceptions import CodietException
 
 
@@ -11,11 +14,20 @@ class TagError(CodietException):
 class UnknownTagError(TagError):
     """Raised when a tag is unknown to the system."""
 
-    def __init__(self, *, uid: int) -> None:
+    @overload
+    def __init__(self, *, uid: int) -> None: ...
+
+    @overload
+    def __init__(self, *, name: str) -> None: ...
+
+    def __init__(self, *, uid: int | None = None, name: str | None = None) -> None:
         self.uid = uid
+        self.name = name
 
     def __str__(self) -> str:
-        return f"The tag {self.uid} is unknown to the system."
+        if self.uid is not None:
+            return f"The tag #{self.uid} is unknown to the system."
+        return f"The tag '{self.name}' is unknown to the system."
 
 
 class TagNotFoundError(TagError):
