@@ -1,3 +1,9 @@
+"""Protocols and types for quantities, units, and unit conversions.
+
+It is tempting to use quantity internally in unit conversions, but in the past this
+has lead to issues with circular dependencies, since quantites depend on unit
+conversions for their mass in grams property.
+"""
 from __future__ import annotations
 from typing import Protocol, runtime_checkable, Mapping, Collection, Optional
 from enum import Enum

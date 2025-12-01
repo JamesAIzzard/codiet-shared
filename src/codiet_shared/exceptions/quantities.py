@@ -1,3 +1,12 @@
+"""
+Many of the other domain entities exclusively use UID to identify instances.
+Unit conversions are a more interesting case, because they are stored as singleton
+instances independently (for the constant conversions - e.g., gram to kilogram)
+but are also associated with entities (e.g., an ingredient has a unit conversion
+for cup to gram). Therefore, we always use key-based identification for
+unit conversions.
+"""
+
 from __future__ import annotations
 from typing import TYPE_CHECKING, overload
 
@@ -5,14 +14,6 @@ from ..exceptions.common import CodietException
 
 if TYPE_CHECKING:
     from ..protocols.quantities import UnitConversionKey
-
-
-# Many of the other domain entities exclusively use UID to identify instances.
-# Unit conversions are a more interesting case, because they are stored as singleton
-# instances independently (for the constant conversions - e.g., gram to kilogram)
-# but are also associated with entities (e.g., an ingredient has a unit conversion
-# for cup to gram). Therefore, we always use key-based identification for
-# unit conversions.
 
 
 class UnitError(CodietException):
@@ -102,6 +103,16 @@ class ZeroQuantityInUCError(UnitConversionError):
         return f"The unit conversion {self.key} has a zero quantity."
 
 
+class NegativeQuantityInUCError(UnitConversionError):
+    """Raised when a unit conversion has a negative quantity."""
+
+    def __init__(self, key: UnitConversionKey) -> None:
+        self.key: UnitConversionKey = key
+
+    def __str__(self) -> str:
+        return f"The unit conversion {self.key} has a negative quantity."
+
+
 class SameUnitConversionError(UnitConversionError):
     """Raised when a unit conversion has the same from and to units."""
 
@@ -142,6 +153,8 @@ __all__ = [
     "UnitConversionNotFoundError",
     "DuplicateUnitConversionError",
     "ZeroQuantityInUCError",
+    "NegativeQuantityInUCError",
+    "SameUnitConversionError",
     "UndefinedUnitConversionError",
     "UnitConversionOverconstrainedError",
 ]
