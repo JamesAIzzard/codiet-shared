@@ -12,7 +12,8 @@
       "Bash(powershell -Command \"cd ''c:\\Users\\James\\Documents\\codiet-shared''; poetry run mypy .\")",
       "Bash(powershell -Command \"cd ''c:\\Users\\James\\Documents\\codiet-shared''; poetry run python -m mypy .\")",
       "Bash(powershell -Command \"cd ''c:\\Users\\James\\Documents\\codiet-shared''; poetry install\")",
-      "Bash(powershell -Command \"cd ''c:\\Users\\James\\Documents\\codiet-shared''; poetry lock; poetry install\")"
+      "Bash(powershell -Command \"cd ''c:\\Users\\James\\Documents\\codiet-shared''; poetry lock; poetry install\")",
+      "Bash(powershell -Command \"cd ''c:\\Users\\James\\Documents\\codiet-shared''; poetry run pytest tests/protocols/test_has_nutrient_attrs.py -v\")"
     ],
     "deny": [],
     "ask": []

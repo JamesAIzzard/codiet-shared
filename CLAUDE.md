@@ -1,6 +1,7 @@
 ## General
-Feel free to remember our conversation history when answering.
-If anything isn't clear, please always ask for clarification. An additonal question is always better than a guessed solution. I'm always happy to answer questions and clarify things. You can't ask too many questions.
+- Feel free to remember our conversation history when answering.
+- If anything isn't clear, please always ask for clarification. An additonal question is always better than a guessed solution. I'm always happy to answer questions and clarify things. You can't ask too many questions.
+- If a dependency is listed as a dev dependency in pyproject.toml, you can see it in Documents/ as a sibling to this repo, so you can inspect its code directly.
 
 ## Run commands
 - You are running on windows.
