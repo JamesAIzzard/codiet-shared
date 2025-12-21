@@ -8,31 +8,30 @@ if TYPE_CHECKING:
 
 
 class CaloriesError(CodietException):
-    """Base class for all calorie-related exceptions."""
+    """Base exception for calorie-related errors."""
+
+    def __str__(self) -> str:
+        return "An calorie-related error occurred."
 
 
 class NegativeCaloriesError(CaloriesError):
-    def __init__(self, *, calories: float, entity_name: str):
-        self.calories = calories
-        self.entity_name = entity_name
+    """Raised when a negative calorie value is encountered."""
 
-    @property
-    def message(self) -> str:
-        return (
-            f"Calories cannot be negative: {self.calories} kcal in {self.entity_name}."
-        )
+    def __init__(self, *, calories: float):
+        self.calories = calories
+
+    def __str__(self) -> str:
+        return f"Negative calories value ({self.calories}) encountered."
 
 
 class IncompleteCaloricNutrientsError(CaloriesError):
+    """Raised when caloric nutrient ratios are incomplete or invalid."""
+
     def __init__(self, *, nutrient_ratios: NutrientRatioMap):
         self.nutrient_ratios = nutrient_ratios
 
-    @property
-    def message(self) -> str:
-        return (
-            f"Mandatory caloric nutrient ratios missing: {self.nutrient_ratios}. "
-            "Ensure all required nutrients are provided."
-        )
+    def __str__(self) -> str:
+        return "Incomplete caloric nutrient ratios provided."
 
 
 __all__ = [

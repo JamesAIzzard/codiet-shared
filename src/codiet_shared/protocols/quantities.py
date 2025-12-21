@@ -1,3 +1,9 @@
+"""Protocols and types for quantities, units, and unit conversions.
+
+It is tempting to use quantity internally in unit conversions, but in the past this
+has lead to issues with circular dependencies, since quantites depend on unit
+conversions for their mass in grams property.
+"""
 from __future__ import annotations
 from typing import Protocol, runtime_checkable, Mapping, Collection, Optional
 from enum import Enum
@@ -22,7 +28,7 @@ class UnitSystem(Enum):
 @runtime_checkable
 class Unit(Protocol):
     @property
-    def uid(self) -> Optional[int]: ...
+    def uid(self) -> int: ...
 
     @property
     def name(self) -> str: ...
@@ -43,7 +49,7 @@ class Unit(Protocol):
     def aliases(self) -> Collection[str]: ...
 
 
-type UnitMap = Mapping[str, Unit]
+type UnitMap = Mapping[int, Unit]
 
 
 @runtime_checkable
@@ -98,35 +104,33 @@ class UnitConversion(Protocol):
     def uid(self) -> Optional[int]: ...
 
     @property
-    def name(self) -> UnitConversionKey: ...
+    def unit_uids(self) -> UnitConversionKey: ...
+
+    def get_ratio(self, *, from_unit_uid: int, to_unit_uid: int) -> float: ...
 
     @property
-    def unit_names(self) -> UnitConversionKey: ...
-
-    def get_ratio(self, *, from_unit_name: str, to_unit_name: str) -> float: ...
-
-    @property
-    def canonical_unit_value_pairs(
+    def canonical_rep(
         self,
-    ) -> tuple[tuple[str, float], tuple[str, float]]:
-        """Return ((u1, v1), (u2, v2)) in canonical order."""
-        u1, u2 = sorted(self.unit_names)
-        r = float(self.get_ratio(from_unit_name=u1, to_unit_name=u2))
+    ) -> tuple[tuple[int, float], tuple[int, float]]:
+        """Returns a canonical representation of the conversion as
+        ((unit_uid_1, unit_value_1), (unit_uid_2, unit_value_2))."""
+        u1, u2 = sorted(self.unit_uids)
+        r = float(self.get_ratio(from_unit_uid=u1, to_unit_uid=u2))
         return (u1, 1.0), (u2, r)
 
     def to_dto(self) -> UnitConversionDTO: ...
 
     def __hash__(self) -> int:
-        (u1, v1), (u2, v2) = self.canonical_unit_value_pairs
+        (u1, v1), (u2, v2) = self.canonical_rep
         return hash((u1, float(v1), u2, float(v2)))
 
     def __eq__(self, other) -> bool:
-        if not (hasattr(other, "unit_names") and hasattr(other, "get_ratio")):
+        if not (hasattr(other, "unit_uids") and hasattr(other, "get_ratio")):
             return NotImplemented
         try:
-            (u1, v1), (u2, v2) = self.canonical_unit_value_pairs
-            ou1, ou2 = sorted(other.unit_names)
-            oratio = float(other.get_ratio(from_unit_name=ou1, to_unit_name=ou2))
+            (u1, v1), (u2, v2) = self.canonical_rep
+            ou1, ou2 = sorted(other.unit_uids)
+            oratio = float(other.get_ratio(from_unit_uid=ou1, to_unit_uid=ou2))
             (ou1p, _), (ou2p, ov2) = (ou1, 1.0), (ou2, oratio)
         except Exception:
             return False
@@ -134,14 +138,14 @@ class UnitConversion(Protocol):
         return u1 == ou1p and u2 == ou2p and isclose(v2, ov2)
 
     def __str__(self) -> str:
-        (u1, v1), (u2, v2) = self.canonical_unit_value_pairs
+        (u1, v1), (u2, v2) = self.canonical_rep
         return f"{v1}{u1} <-> {v2}{u2}"
 
     def __repr__(self) -> str:
         return self.__str__()
 
 
-type UnitConversionKey = frozenset[str]
+type UnitConversionKey = frozenset[int]
 type UnitConversionKeys = Collection[UnitConversionKey]
 type UnitConversionMap = Mapping[UnitConversionKey, UnitConversion]
 
@@ -164,7 +168,7 @@ class HasUnitConversions(Protocol):
 
 class HasStandardUnit(Protocol):
     @property
-    def standard_unit_name(self) -> str: ...
+    def standard_unit_uid(self) -> int: ...
 
 
 __all__ = [

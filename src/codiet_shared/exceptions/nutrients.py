@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Collection
+from typing import TYPE_CHECKING, Collection, overload
 
 from ..exceptions.common import CodietException
 from ..utils import sig_fig_fmt
@@ -17,97 +17,123 @@ if TYPE_CHECKING:
 class NutrientError(CodietException):
     """Base Nutrient error."""
 
+    def __str__(self) -> str:
+        return "A nutrient-related error occurred."
+
 
 class UnknownNutrientError(NutrientError):
     """A nutrient is unknown to the system."""
 
-    def __init__(self, key: str) -> None:
-        self.key: str = key
+    @overload
+    def __init__(self, *, uid: int) -> None: ...
 
-    @property
-    def message(self) -> str:
-        return f"The nutrient {self.key} is unknown to the system."
+    @overload
+    def __init__(self, *, name: str) -> None: ...
+
+    def __init__(self, *, uid: int | None = None, name: str | None = None) -> None:
+        self.uid = uid
+        self.name = name
+
+    def __str__(self) -> str:
+        if self.uid is not None:
+            return f"The nutrient #{self.uid} is unknown to the system."
+        return f"The nutrient '{self.name}' is unknown to the system."
 
 
 class NutrientAliasCollisionError(NutrientError):
-    """An alias collides with another nutrient name or alias."""
+    """Two nutrients share the same alias/name."""
 
-    def __init__(self, alias: str):
-        self.alias = alias
+    def __init__(self, nutrient_uids: tuple[int, int], colliding_name: str):
+        self.nutrient_uids = nutrient_uids
+        self.colliding_name = colliding_name
 
-    @property
-    def message(self) -> str:
-        return f"The alias {self.alias} collides with another nutrient name or alias."
-
-
-class ExistingNutrientError(NutrientError):
-    """The nutrient already exists."""
-
-    def __init__(self, nutrient_name: str):
-        self.nutrient_name = nutrient_name
-
-    @property
-    def message(self) -> str:
-        return f"The nutrient {self.nutrient_name} already exists."
+    def __str__(self) -> str:
+        return (
+            f"The alias {self.colliding_name} collides with another nutrient "
+            "name or alias."
+            f"The colliding nutrients have UIDs: {self.nutrient_uids}."
+        )
 
 
-class NutrientAttrError(CodietException):
+class NutrientAttrError(NutrientError):
     """Base class for nutrient attribute errors."""
+
+    def __str__(self) -> str:
+        return "A nutrient attribute-related error occurred."
 
 
 class NutrientFlagError(NutrientAttrError):
     """Base class for nutrient flag errors."""
 
+    def __str__(self) -> str:
+        return "A nutrient flag-related error occurred."
+
 
 class NutrientRatioError(NutrientAttrError):
     """Base class for nutrient ratio errors."""
+
+    def __str__(self) -> str:
+        return "A nutrient ratio-related error occurred."
 
 
 class UndefinedNutrientRatioError(NutrientRatioError):
     """Raised when the nutrient ratio is not defined on the entity."""
 
-    def __init__(self, *, nutrient_name: str, entity: HasNutrientAttrs) -> None:
-        self.nutrient_name = nutrient_name
+    def __init__(self, *, nutrient_uid: int, entity: HasNutrientAttrs) -> None:
+        self.nutrient_uid = nutrient_uid
         self.entity = entity
 
-    @property
-    def message(self) -> str:
-        return f"{self.nutrient_name} is not defined on this entity."
+    def __str__(self) -> str:
+        return (
+            f"A ratio for nutrient with UID {self.nutrient_uid} "
+            "is not defined on this entity."
+        )
 
 
 class DuplicateNutrientRatioError(NutrientRatioError):
     """Raised when the nutrient ratio is already defined on the entity."""
 
-    def __init__(self, *, nutrient_name: str, entity: HasNutrientAttrs) -> None:
-        self.nutrient_name = nutrient_name
+    def __init__(self, *, nutrient_uid: int, entity: HasNutrientAttrs) -> None:
+        self.nutrient_uid = nutrient_uid
         self.entity = entity
 
-    @property
-    def message(self) -> str:
-        return f"{self.nutrient_name} is already defined on this entity."
+    def __str__(self) -> str:
+        return f"{self.nutrient_uid} is already defined on this entity."
 
 
 class UnknownNutrientFlagError(NutrientFlagError):
     """Raised when the nutrient flag is not known to the system."""
 
-    def __init__(self, key: str) -> None:
-        self.key = key
+    @overload
+    def __init__(self, *, flag_def_uid: int) -> None: ...
 
-    @property
-    def message(self) -> str:
-        return f"The nutrient flag: {self.key} is not known to the system."
+    @overload
+    def __init__(self, *, name: str) -> None: ...
+
+    def __init__(
+        self, *, flag_def_uid: int | None = None, name: str | None = None
+    ) -> None:
+        self.flag_def_uid = flag_def_uid
+        self.name = name
+
+    def __str__(self) -> str:
+        if self.flag_def_uid is not None:
+            return f"The nutrient flag #{self.flag_def_uid} is not known to the system."
+        return f"The nutrient flag '{self.name}' is not known to the system."
 
 
 class UndefinedNutrientFlagError(NutrientFlagError):
     """Raised when the nutrient flag is not defined on the entity."""
 
-    def __init__(self, *, flag_name: str, entity: HasNutrientAttrs) -> None:
-        self.flag_name = flag_name
+    def __init__(self, *, flag_def_uid: int, entity: HasNutrientAttrs) -> None:
+        self.flag_def_uid = flag_def_uid
         self.has_nutrient_attrs = entity
 
-    @property
-    def message(self) -> str:
-        return f"The nutrient flag {self.flag_name} is undefined on this entity."
+    def __str__(self) -> str:
+        return (
+            f"A nutrient flag with definition #{self.flag_def_uid} is not "
+            f"defined on this entity."
+        )
 
 
 class ExcludedNutrientError(NutrientAttrError):
@@ -119,13 +145,10 @@ class ExcludedNutrientError(NutrientAttrError):
         self.non_zero_nutrient = non_zero_nutrient
         self.excluding_flag = excluding_flag
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return (
-            f"Non-zero nutrient '{self.non_zero_nutrient.nutrient_name}' "
-            f"({self.non_zero_nutrient.nutrient_g_per_100g}g per 100g) is excluded by flag "
-            f"'{self.excluding_flag.name}' ({self.excluding_flag.value}). "
-            f"Nutrient: {self.non_zero_nutrient}, Excluding flag: {self.excluding_flag}"
+            f"The nutrient: {self.non_zero_nutrient.nutrient.name} is non-zero "
+            f"and excluded by the true flag {self.excluding_flag.definition.name}."
         )
 
 
@@ -136,14 +159,10 @@ class FalseFlagWithTrueChildError(NutrientAttrError):
         self.false_flag = false_flag
         self.true_child = true_child
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return (
             f"False flag '{self.false_flag.name}' ({self.false_flag.value}) "
-            f"has a true child flag '{self.true_child.name}' ({self.true_child.value}). "
-            f"This creates an inconsistent state where a parent flag is false "
-            f"but its child flag is true. "
-            f"False flag: {self.false_flag}, True child: {self.true_child}"
+            f"has a true child flag '{self.true_child.name}' ({self.true_child.value})."
         )
 
 
@@ -159,14 +178,10 @@ class NonZeroNutrientWithZeroAncError(NutrientAttrError):
         self.nonzero_nutrient = nonzero_nutrient
         self.zero_ancestor = zero_ancestor
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return (
-            f"Non-zero nutrient '{self.nonzero_nutrient.nutrient_name}' "
-            f"({self.nonzero_nutrient.nutrient_g_per_100g}g per 100g) cannot have a zero ancestor: "
-            f"'{self.zero_ancestor.nutrient_name}'. "
-            "Either the ancestor must be non-zero or the nutrient must be zero. "
-            "Please also adjust any related flags to be consistent with your changes."
+            f"Non-zero nutrient {self.nonzero_nutrient.nutrient_name} has a zero "
+            f"ancestor {self.zero_ancestor.nutrient_name}."
         )
 
 
@@ -182,14 +197,12 @@ class NonZeroParentNutrientWithFullZeroChildrenError(NutrientAttrError):
         self.parent_nutrient = parent_nutrient
         self.child_nutrients = child_nutrients
 
-    @property
-    def message(self) -> str:
-        child_names = list(self.child_nutrients.keys())
+    def __str__(self) -> str:
         return (
-            f"Non-zero parent nutrient '{self.parent_nutrient.nutrient_name}' "
-            f"({self.parent_nutrient.nutrient_g_per_100g}g per 100g) has all children defined as zero. "
-            f"At least one child must be non-zero to sum to the parent's value, or the parent must be zero.\n"
-            f"Child nutrients: {child_names}"
+            f"Non-zero parent nutrient {self.parent_nutrient.nutrient_name}"
+            "has all children defined as zero. "
+            f"At least one child must be non-zero to sum to the parent's value, "
+            "or the parent must be zero."
         )
 
 
@@ -201,29 +214,14 @@ class ChildNutrientsExceedParentError(NutrientAttrError):
         *,
         child_nutrients: NutrientRatioMap,
         parent_nutrient: NutrientRatio,
-        ratio: float,
     ) -> None:
         self.child_nutrients = child_nutrients
         self.parent_nutrient = parent_nutrient
-        self._ratio = ratio
 
-    @property
-    def ratio(self) -> float:
-        return self._ratio
-
-    @property
-    def message(self) -> str:
-        child_names = list(self.child_nutrients.keys())
-
-        child_sum = sum(
-            ratio.nutrient_g_per_100g for ratio in self.child_nutrients.values()
-        )
-
+    def __str__(self) -> str:
         return (
-            f"The child nutrients of {self.parent_nutrient.nutrient_name} exceed the stated value for {self.parent_nutrient.nutrient_name}:\n"
-            f"{child_sum}g > {self.parent_nutrient.nutrient_g_per_100g}g per 100g.\n"
-            f"Child nutrients: {child_names}\n"
-            "Either parent must be increased or child nutrient(s) must be reduced."
+            f"The child nutrients of {self.parent_nutrient.nutrient_name} exceed "
+            f"the stated value for {self.parent_nutrient.nutrient_name}."
         )
 
 
@@ -235,31 +233,15 @@ class ParentNutrientExceedsChildSumError(NutrientAttrError):
         *,
         parent_nutrient: NutrientRatio,
         child_nutrients: NutrientRatioMap,
-        ratio: float = 1.0,
     ) -> None:
         self.parent_nutrient = parent_nutrient
         self.child_nutrients = child_nutrients
-        self._ratio = ratio
 
-    @property
-    def message(self) -> str:
-        child_names = list(self.child_nutrients.keys())
-
-        child_sum = sum(
-            ratio.nutrient_g_per_100g for ratio in self.child_nutrients.values()
-        )
-
+    def __str__(self) -> str:
         return (
-            f"Parent nutrient '{self.parent_nutrient.nutrient_name}' exceeds sum of its child nutrients:\n"
-            f"{self.parent_nutrient.nutrient_g_per_100g}g per 100g > {child_sum}g per 100g.\n"
-            "Child Nutrients:\n"
-            f"{child_names}\n"
-            "Either parent must be reduced or child nutrient(s) must be increased."
+            f"Parent nutrient {self.parent_nutrient.nutrient_name} exceeds sum of "
+            "its child nutrients."
         )
-
-    @property
-    def ratio(self) -> float:
-        return self._ratio
 
 
 class NutrientRatiosExceedOneError(NutrientAttrError):
@@ -271,22 +253,8 @@ class NutrientRatiosExceedOneError(NutrientAttrError):
         self.total = total
         self.nutrient_ratios = nutrient_ratios
 
-    @property
-    def message(self) -> str:
-        nutrient_names = [ratio.nutrient_name for ratio in self.nutrient_ratios]
-        nutrient_percs = {
-            ratio.nutrient_name: sig_fig_fmt(ratio.nutrient_perc)
-            for ratio in self.nutrient_ratios
-        }
-        return (
-            f"Total nutrient ratios ({sig_fig_fmt(self.total)}) exceed 1.0. "
-            f"Involved nutrients: {nutrient_names}. "
-            f"Individual percentages: {nutrient_percs}"
-        )
-
-    @property
-    def ratio(self) -> float:
-        return self.total
+    def __str__(self) -> str:
+        return f"Total nutrient ratios ({sig_fig_fmt(self.total)}) exceed 1.0."
 
 
 class NutrientMassError(CodietException):
@@ -297,21 +265,19 @@ class UndefinedNutrientMassError(NutrientMassError):
     """Raised when the nutrient mass is not defined on the entity."""
 
     def __init__(
-        self, *, nutrient_name: str, has_nutrient_masses: HasNutrientMasses
+        self, *, nutrient_uid: int, has_nutrient_masses: HasNutrientMasses
     ) -> None:
-        self.nutrient_name = nutrient_name
+        self.nutrient_uid = nutrient_uid
         self.has_nutrient_masses = has_nutrient_masses
 
-    @property
-    def message(self) -> str:
-        return f"No mass is defined for {self.nutrient_name} on the entity."
+    def __str__(self) -> str:
+        return f"No mass is defined for nutrient #{self.nutrient_uid} on the entity."
 
 
 __all__ = [
     "NutrientError",
     "UnknownNutrientError",
     "NutrientAliasCollisionError",
-    "ExistingNutrientError",
     "NutrientAttrError",
     "NutrientFlagError",
     "NutrientRatioError",

@@ -1,18 +1,30 @@
 from __future__ import annotations
-from typing import Hashable
+from typing import overload, TYPE_CHECKING
 
 from .common import CodietException
+
+if TYPE_CHECKING:
+    from ..protocols.recipes import Recipe
 
 
 class RecipeError(CodietException):
     """Base class for all recipe-related exceptions."""
 
+    def __str__(self) -> str:
+        return "A recipe-related error occurred."
+
+
+class RecipeMissingUIDError(RecipeError):
+    """Raised when a recipe is missing a UID."""
+
+    def __str__(self) -> str:
+        return "The recipe is missing a UID."
+
 
 class UnnamedRecipeError(RecipeError):
     """Raised when a recipe has no name."""
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return "The recipe has no name."
 
 
@@ -22,8 +34,7 @@ class NoRecipeDescriptionError(RecipeError):
     def __init__(self, *, recipe_name: str):
         self.recipe_name = recipe_name
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"The recipe '{self.recipe_name}' has no description."
 
 
@@ -33,8 +44,7 @@ class NoTypicalServiceSizeError(RecipeError):
     def __init__(self, *, recipe_name: str):
         self.recipe_name = recipe_name
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"The recipe '{self.recipe_name}' has no typical serving size."
 
 
@@ -44,20 +54,27 @@ class NoCookingTimeError(RecipeError):
     def __init__(self, *, recipe_name: str):
         self.recipe_name = recipe_name
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"The recipe '{self.recipe_name}' has no cooking time."
 
 
 class RecipeNotFoundError(RecipeError):
     """Raised when a recipe is not found."""
 
-    def __init__(self, key: Hashable):
-        self.key: Hashable = key
+    @overload
+    def __init__(self, *, uid: int) -> None: ...
 
-    @property
-    def message(self) -> str:
-        return f"Recipe with key '{self.key}' not found."
+    @overload
+    def __init__(self, *, name: str) -> None: ...
+
+    def __init__(self, *, uid: int | None = None, name: str | None = None) -> None:
+        self.uid = uid
+        self.name = name
+
+    def __str__(self) -> str:
+        if self.uid is not None:
+            return f"Recipe with UID '{self.uid}' not found."
+        return f"Recipe with name '{self.name}' not found."
 
 
 class DuplicateRecipeError(RecipeError):
@@ -66,8 +83,7 @@ class DuplicateRecipeError(RecipeError):
     def __init__(self, recipe_name: str):
         self.recipe_name = recipe_name
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"Recipe with key '{self.recipe_name}' already exists."
 
 
@@ -77,13 +93,13 @@ class NoIngredientQuantitiesError(RecipeError):
     def __init__(self, *, recipe_name: str) -> None:
         self.recipe_name = recipe_name
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"The recipe '{self.recipe_name}' has no ingredient quantities."
 
 
 __all__ = [
     "RecipeError",
+    "RecipeMissingUIDError",
     "UnnamedRecipeError",
     "NoRecipeDescriptionError",
     "NoTypicalServiceSizeError",

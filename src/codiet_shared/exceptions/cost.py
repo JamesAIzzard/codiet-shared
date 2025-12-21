@@ -6,6 +6,9 @@ from .common import CodietException
 class CostError(CodietException):
     """Base class for all cost-related exceptions."""
 
+    def __str__(self) -> str:
+        return "A cost-related error occurred."
+
 
 class NegativeCostError(CostError):
     """Raised when a cost value is negative."""
@@ -13,8 +16,7 @@ class NegativeCostError(CostError):
     def __init__(self, cost_value: float) -> None:
         self.cost_value = cost_value
 
-    @property
-    def message(self) -> str:
+    def __str__(self) -> str:
         return f"Cost value cannot be negative: {self.cost_value}."
 
 
