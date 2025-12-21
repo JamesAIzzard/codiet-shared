@@ -31,11 +31,20 @@ class UnknownTagError(TagError):
 
 
 class TagNotFoundError(TagError):
-    def __init__(self, *, uid: int) -> None:
-        self.uid: int = uid
+    @overload
+    def __init__(self, *, uid: int) -> None: ...
+
+    @overload
+    def __init__(self, *, name: str) -> None: ...
+
+    def __init__(self, *, uid: int | None = None, name: str | None = None) -> None:
+        self.uid = uid
+        self.name = name
 
     def __str__(self) -> str:
-        return f"The tag {self.uid} was not found on the entity."
+        if self.uid is not None:
+            return f"The tag #{self.uid} was not found."
+        return f"The tag '{self.name}' was not found."
 
 
 class DuplicateTagError(TagError):
