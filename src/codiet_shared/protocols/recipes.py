@@ -61,7 +61,7 @@ class Recipe(
     def to_dto(self) -> RecipeDTO: ...
 
 
-RecipeMap = Mapping[str, Recipe]
+RecipeMap = Mapping[int, Recipe]
 
 
 @runtime_checkable
@@ -88,7 +88,7 @@ class RecipeQuantity(HasNutrientMasses, HasCost, HasCalories, Protocol):
     def to_dto(self) -> RecipeQuantityDTO: ...
 
 
-RecipeQuantityMap = Mapping[str, RecipeQuantity]
+RecipeQuantityMap = Mapping[int, RecipeQuantity]
 
 __all__ = [
     "Recipe",

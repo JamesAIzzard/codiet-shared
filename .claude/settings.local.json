@@ -17,7 +17,8 @@
       "Bash(dir \"c:\\Users\\James\\Documents\\codiet-shared\\tests\\fixtures\")",
       "Bash(powershell -Command \"cd ''c:\\Users\\James\\Documents\\codiet-shared''; poetry run pytest tests/dtos/test_quantities_dto.py -v\")",
       "Bash(powershell -Command \"cd ''c:\\\\Users\\\\james\\\\Documents\\\\codiet-shared''; poetry run mypy src/codiet_shared/exceptions/tags.py\")",
-      "Bash(powershell -Command \"cd ''c:\\\\Users\\\\james\\\\Documents\\\\codiet-shared''; poetry run pytest tests/ -q\")"
+      "Bash(powershell -Command \"cd ''c:\\\\Users\\\\james\\\\Documents\\\\codiet-shared''; poetry run pytest tests/ -q\")",
+      "Bash(dir /b \"C:\\\\Users\\\\james\\\\Documents\")"
     ],
     "deny": [],
     "ask": []

@@ -58,7 +58,7 @@ class Ingredient(
         return hash(self) == hash(other)
 
 
-IngredientMap = Mapping[str, Ingredient]
+IngredientMap = Mapping[int, Ingredient]
 
 
 @runtime_checkable
