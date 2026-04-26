@@ -1,11 +1,7 @@
 from __future__ import annotations
-from typing import overload, TYPE_CHECKING
+from typing import overload
 
 from .common import CodietException
-
-if TYPE_CHECKING:
-    from ..protocols.recipes import Recipe
-
 
 class RecipeError(CodietException):
     """Base class for all recipe-related exceptions."""
